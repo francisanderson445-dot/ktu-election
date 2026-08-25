@@ -520,8 +520,8 @@ async function initializeDatabase() {
     createdAt TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  await run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('votingOpen', '1')`);
-  await run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('maxVoters', '400')`);
+  await run(`INSERT INTO settings (key, value) VALUES ('votingOpen', '1') ON CONFLICT (key) DO NOTHING`);
+  await run(`INSERT INTO settings (key, value) VALUES ('maxVoters', '400') ON CONFLICT (key) DO NOTHING`);
   await run(`CREATE TABLE IF NOT EXISTS approved_students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     firstName TEXT,
