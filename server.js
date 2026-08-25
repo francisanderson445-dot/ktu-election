@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'ktu-portfolio-voting-secret';
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'database.sqlite');
 const DATABASE_URL = process.env.DATABASE_URL || '';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const MAX_VOTERS = 400;
 const VALID_PORTFOLIOS = [
   'President',
@@ -566,10 +568,10 @@ async function initializeDatabase() {
 
   const adminCount = await get('SELECT COUNT(*) AS total FROM admin_users');
   if ((adminCount?.total || 0) === 0) {
-    const hash = await bcrypt.hash('admin123', 10);
+    const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
     await run(
       'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?)',
-      ['admin', hash, 'Election Administrator']
+      [ADMIN_USERNAME, hash, 'Election Administrator']
     );
   }
 
