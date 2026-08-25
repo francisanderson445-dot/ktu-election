@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const sqlite3 = require('sqlite3').verbose();
+const postgres = require('postgres');
 const fs = require('fs');
 const path = require('path');
 let XLSX;
@@ -15,7 +15,8 @@ try {
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'ktu-portfolio-voting-secret';
-const DB_PATH = path.join(__dirname, 'database.sqlite');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'database.sqlite');
+const DATABASE_URL = process.env.DATABASE_URL || '';
 const MAX_VOTERS = 400;
 const VALID_PORTFOLIOS = [
   'President',
@@ -27,44 +28,51 @@ const VALID_PORTFOLIOS = [
   'Women Commissioner'
 ];
 
+if (!DATABASE_URL) fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.use(express.static(__dirname));
 
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('Database connection error:', err.message);
-  } else {
-    console.log('Connected to SQLite database');
-  }
-});
+const db = DATABASE_URL ? postgres(DATABASE_URL, { max: 1, prepare: false }) : null;
+const sqlite = !DATABASE_URL ? new (require('sqlite3').verbose()).Database(DB_PATH) : null;
+if (DATABASE_URL) console.log('Connected to Supabase PostgreSQL');
 
-function run(sql, params = []) {
+function convertSql(sql) {
+  let parameterIndex = 0;
+  return sql
+    .replace(/INTEGER PRIMARY KEY AUTOINCREMENT/gi, 'BIGSERIAL PRIMARY KEY')
+    .replace(/INSERT OR IGNORE INTO/gi, 'INSERT INTO')
+    .replace(/\?/g, () => `$${++parameterIndex}`);
+}
+
+function sqliteRun(sql, params) {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) return reject(err);
+    sqlite.run(sql, params, function (error) {
+      if (error) return reject(error);
       resolve({ id: this.lastID, changes: this.changes });
     });
   });
 }
 
-function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) return reject(err);
-      resolve(rows);
-    });
-  });
+async function run(sql, params = []) {
+  if (!DATABASE_URL) return sqliteRun(sql, params);
+  const result = await db.unsafe(convertSql(sql), params);
+  return { id: result[0]?.id, changes: result.count ?? result.length };
 }
 
-function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) return reject(err);
-      resolve(row);
-    });
-  });
+async function all(sql, params = []) {
+  if (!DATABASE_URL) {
+    return new Promise((resolve, reject) => sqlite.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows)));
+  }
+  if (/^PRAGMA /i.test(sql)) return [];
+  return db.unsafe(convertSql(sql), params);
+}
+
+async function get(sql, params = []) {
+  const rows = await all(sql, params);
+  return rows[0];
 }
 
 function normalizeText(value) {
@@ -267,7 +275,7 @@ async function syncApprovedStudentsFromClassList() {
   const seen = new Set();
 
   for (const student of approvedStudents) {
-    const key = `${student.email.toLowerCase()}|${student.programme.toLowerCase()}|${student.level}`;
+    const key = student.email.toLowerCase();
     if (!seen.has(key)) {
       seen.add(key);
       uniqueApprovedStudents.push(student);
@@ -359,6 +367,7 @@ function verifyNominee(req, res, next) {
 }
 
 async function ensureColumn(tableName, columnName, columnDefinition) {
+  if (DATABASE_URL) return;
   const columns = await all(`PRAGMA table_info(${tableName})`);
   if (!columns.some((column) => column.name === columnName)) {
     await run(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition}`);
@@ -367,6 +376,7 @@ async function ensureColumn(tableName, columnName, columnDefinition) {
 }
 
 async function fixApprovedStudentsSchema() {
+  if (DATABASE_URL) return;
   const indexes = await all("PRAGMA index_list('approved_students')");
   const indexNumberUnique = [];
 
@@ -408,6 +418,7 @@ async function fixApprovedStudentsSchema() {
 }
 
 async function fixStudentsSchema() {
+  if (DATABASE_URL) return;
   const indexes = await all("PRAGMA index_list('students')");
   const indexNumberUnique = [];
 
@@ -598,10 +609,11 @@ async function initializeDatabase() {
   }
 }
 
-initializeDatabase().then(() => {
+const initialization = initializeDatabase().then(() => {
   console.log('Database initialization complete');
 }).catch((error) => {
   console.error('Database initialization failed:', error);
+  throw error;
 });
 
 app.get('/api/settings', async (req, res) => {
@@ -1286,6 +1298,10 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`KTU election server running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`KTU election server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { app, initialization };
