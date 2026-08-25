@@ -41,10 +41,16 @@ if (DATABASE_URL) console.log('Connected to Supabase PostgreSQL');
 
 function convertSql(sql) {
   let parameterIndex = 0;
-  return sql
+  let convertedSql = sql
     .replace(/INTEGER PRIMARY KEY AUTOINCREMENT/gi, 'BIGSERIAL PRIMARY KEY')
     .replace(/INSERT OR IGNORE INTO/gi, 'INSERT INTO')
     .replace(/\?/g, () => `$${++parameterIndex}`);
+
+  if (/^INSERT INTO approved_students/i.test(convertedSql)) {
+    convertedSql += ' ON CONFLICT (email) DO NOTHING';
+  }
+
+  return convertedSql;
 }
 
 function sqliteRun(sql, params) {
@@ -220,6 +226,10 @@ function loadApprovedStudentsFromTextFile() {
 }
 
 async function syncApprovedStudentsFromClassList() {
+  if (DATABASE_URL) {
+    console.log('Skipping desktop class-list synchronization in Supabase mode.');
+    return;
+  }
   const folderPath = getClassListFolder();
   if (!folderPath) {
     console.log('No class list folder found on desktop. Trying the local approved-student fallback list.');
