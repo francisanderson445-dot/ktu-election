@@ -1,0 +1,391 @@
+const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
+const http = require('http');
+
+const text = `- Stephen Manmara, manmaraste444@gmail.com
+- Esther Sassah Dziedzorm Yaa, sassahesther993@gmail.com
+- Bridget Sackitey Odeibea, odeibeabridget3@gmail.com
+- EPHRAIM AGYEI KUBITI, Paaqhesy303@gmail.com
+- MCKEOWN SARPONG KENNEDY KWAKU, sarpongmckeownkennedy@gmail.com
+- EMMANUEL MBILLAH, mbillahkuug@gmail.com
+- FLORA AMPONSAH, amponsahflora40@gmail.com
+- Angel Ocloo Kekeli, oangelkekeli@gmail.com
+- Charles Ofosuapea Darlings, darkinstinct23@gmail.com
+- ALICE ASANTE FRIMPOMAA, alicefrimpomaaasante@gmail.com
+- DORIS KPODO MAWUKO, doriskpd@gmail.com
+- ELISHA DOYI KODZO, elishadoyi1234@gmail.com
+- Samuel Antwi, cedis414@gmail.com
+- HILTON OFOSU FRIMPONG, hiltonfrimps@gmail.com
+- Kingsford Ghartey Kwabena Panyin, gharteypayin5@gmail.com
+- Prince Ada, adaprince96@gmail.com
+- Theresa Buamah Nifa, theresanifa01@gmail.com
+- Evans Boateng Adjei, hevansmerlo@gmail.com
+- Daniel Ofosuhene, cmooreblay@gmail.com
+- ANGELLA HUKPORTI EDEM, edemella166@gmail.com
+- O’Neill Acheampong Opoku, acheampongoneill5@gmail.com
+- Delight Attah Esinam, delightattah33@gmail.com
+- Selorm Gasu, selormvincent1@gmail.com
+- DANIEL SOM, somdaniel41@gmail.com
+- ERICA ADETSU MAWUSE VIGAH, mhawuse@gmail.com
+- TERRY YEBOAH BEMPO, terryyeboah71@gmail.com
+- KINGSLEY BALAAT YENNULOONT, balaatkingsl@gmail.com
+- Mariama Ahmedu, mariamaahmedu06@gmail.com
+- BENEDICT SARPONG ASARE, nanakwadwopm17@gmail.com
+- Raymond Adu Offei, aduraymond383@gmail.com
+- SOLOMON BENEFO KWANING, solomonkwaning59@gmail.com
+- Patrick Otchere Gyimah, smithpatrick6217@gmail.com
+- Stephanie Osei, stephanieosei574@gmail.com
+- ABDUL-LATIF ABDULAI, abdulaiabdullatif58@gmail.com
+- Korkoedzi Solomon,
+- EDEM ADJEI OKYERE, edemadjei998@gmail.com
+- David Zabu, verdictking096@gmail.com
+- Daniel Wayo Edem, danieledemwayo006@gmail.com
+- Goodness Marcus Moses, goodnessmarcus625@gmail.com
+- STEPHEN MENSAH AMARKWE, stephenamarkwe01@gmail.com
+- DESMOND MATHIESON, desmondmathieson@gmail.com
+- Alex Kyevi, kyevialex@gmail.com
+- Otoo Richmond,
+- ANNA ADJONYOH, annaadjonyoh@gmail.com
+- Samuel Boffah Kwadwo, boffahsamuel512@gmail.com
+- Benedicta Akakele Wentoya, benedictaakakele@gmail.com
+- Christabel Provencal Serwaa, provencalchristabelserwaa@gmail.com
+- JAMES NKETIA, nketiaj18@gmail.com
+- Anthoanet Bossoh, nettybabe0730@gmail.com
+- Kojo Kantanka Sarfo, boyledorothy47@gmail.com
+- NANCY DADZOE YAYRA AKU, nancydadzoe4@gmail.com
+- ENOCH ADJETEY, jblenneb@gmail.com
+- Joana Okoe-Mensah Kaa, joanaokoemensah@gmail.com
+- OLIVIA ADJANI EKUA BEDU, baduolive73@gmail.com
+- Roland Asante Amankwah, rolandasante772@gmail.com
+- SAMUEL ADDO-ABROSO KWENOR, nbagucci4545@gmail.com
+- Eric Nartey, narteye018@gmail.com
+- Abena Anima Adjei, animaabena1518@gmail.com
+- EMMANUEL HAMILTON KWOFIE, nuelhilton000@gmail.com
+- DANIELLA KESSON MAAME NTSIMA, kessondaniella@gmail.com
+- Eva Darko, abenaeva18@icloud.com
+- Abigail Anegyemene, anegyemenea@gmail.com
+- Andrew Gyampoh Kwakye, andrewgyampoh616@gmail.com
+- GABRIEL PAINTSIL, scripturemystic@gmail.com
+- Esther Dzivor Makafui, dzivormakafui370@gmail.com
+- Ishmael Awini Abdul Sabik, ishmaelawini08@gmail.com
+- Rachael Domey, rachaeldomey@gmail.com
+- FAREEDATU SHABAN, fareedatushaban@gmail.com
+- JOSEPH NAATIB NAAYAM, naatibjosephnaayam@gmail.com
+- Michael Anum Junior Awenanya, jrmichaelanum47@gmail.com
+- FADILA JINUMAH, fadilajinumah@gmail.com
+- Victoria Gati Asiwome, simpl.yria66@gmail.com
+- NORA TAWIAH MAA ABENA, tawiahnora3@gmail.com
+- Frank Adu Kojo Arthur, frankarthur2929@gmail.com
+- ABDULAI KUBURATU, abdulaikuburatu6@gmail.com
+- JONATHAN MEPSON OHENE, mepsonjonathanohene@gmail.com
+- SHANFFERY EHOAH ATTA, dontwinne@gmail.com
+- Kelvin Dorkenu Serlorm, kj700110@gmail.com
+- GIFTY EFFAH BOATEMAAH, boatemaaheffah@gmail.com
+- BERNARD AMFOH AWUKU, amfohbernardawuku12@gmail.com
+- DOROTHY GBERBIE NAADU BLESSING, dorothynblartey61@gmail.com
+- Doreen Awunor, doreenawunor024@gmail.com
+- Revival Adzani, revivaladzani@gmail.com
+- Deborah Agyapong Kyerewaa, agyapongdeborah46@gmail.com
+- ABIGAIL LAWER DEDE, abigaildede850@gmail.com
+- Christiana Amponsah Boaduah, amponsahchristiana16@gmail.com
+- Christopher Fekpe, christopherfekpe1@gmail.com
+- Wisdom Aziawoh Addo, aziawohaddowisdom@gmail.com
+- JULIA PANFORD, juliapanford1906@gmail.com
+- Lawrence Abban Adzoyi Setorgy, abban.law18@gmail.com
+- TRACY AGYARKO SARFOA NANA YAA, agyarkotracysarfoananayaa@gmail.com
+- SUSAN VUDUGAH FAFALI, bigmaame720@Gmail.com
+- Amenuvor Dzidzor Kojo Kojo, kojokojoamenuvor123@gmail.com
+- Mary Amenyo, marilynamenyo2@gmail.com
+- CATHERINE AGBLEKE NORKPLIM, norkplimcatherine3@gmail.com
+- Faith Alorgbey Esenam, blessmeesinam@gmail.com
+- Blankson Gyimah Agyei, agyeiblanksongyimah@gmail.com
+- Princess Korang Danso, princessdanso528@gmail.com
+- Kingsford Attakumah Edem Komla, kingsfordattakumah36@gmail.com
+- Raymond Annor, raymondryb25@icloud.com
+- Rita Bennie, bemponghillary1@gmail.com
+- Michael Quainoo Tetteh, tmichaelquainoo@gmail.com
+- Marigold Mantebea Otabil, marigoldotabil@gmail.com
+- BOATENG KINGSLEY, k4765031@gmail.com
+- ADJELEY-ODUA MARGARET ADJEI, margaretadjeleyoduaadjei@gmail.com
+- SACKEY RICHARD, sackeyrichard800@gmail.com
+- ANSAH ELIZABETH ABBAN, ansahelizabeth650@gmail.com
+- KUDAYAH GREGORY, gregorykudayah@gmail.com
+- OSEI DIANA, oseidiana590@gmail.com
+- BLANKSON BEATRICE, blanksonbeatrice30@gmail.com
+- TAWIAH CHRISTOPHER, asabrechristopher32@gmail.com
+- NIIQUAYE EMMANUEL, niiquayeemmaniel@gmail.com
+- QUACOO ABIGAIL, quacooabigail9@gmail.com
+- AREMU MICHAEL FLORENCE, florencearemu2004@gmail.com
+- ADU JOSEPHINE, adepa6537@gmail.com
+- OSAFO SOMUAH HILDA, somuahosafohilda@gmail.com
+- FREEMAN DANIEL, www.ysljabari@gmail.com
+- DUODU EMMANUEL, duodu615@gmail.com
+- AGBEDAM FREDA, agbedamfreda@icloud.com
+- OHEMENG EZEKIEL, ohemengezekiel123@gmail.com
+- MC-EDEMS TRACY SIKADUA, sikaduamcedems@gmail.com
+- ADJEI BRIDGET ADEPA, bridievox@gmail.com
+- AKYIAA STEPHANIE ABENA, stephanieakyiaa93@gmail.com
+- SOMUAH BERNICE OPOMEA, mhizSomuah@icloud.com
+- OFOSU AGYAPOMAAH ANGELINA, a43626755@gmail.com
+- AGBANU-DOTSE JENNIFER, agbanucharityafi1@gmail.com
+- COFFIE EWOENAM ERNESTINA, coffietina8@gmail.com
+- NARH DEDE DIANA, narhdiana6114@gmail.com
+- TAMBE NKRUMAH LORDINA, lordinatambe@gmail.com
+- ACHEAMPONG BOADU ISAAC, kf3047234@gmail.com
+- TEYE AWUSI BENEDICTA, benedicta.teye1203@gmail.com
+- QUANSAH ANASTASIA, quansahanastasia12@gmail.com
+- AKUTEYE ABIGAIL, akuteyeabigail696@gmail.com
+- ADDO ANOKYEWAA OHEMAA, ohemaaanokyewaaaddo23@gmail.com
+- DAMPARE BARBARA ATUA, damparebarbara@gmail.com
+- OWUSU PHILOMINA TWUNWAA, philomiaowusu@gmail.com
+- FIAKPONU HORLALI AUGUSTINA, fiakponuaugustinah@gmail.com
+- MANFRED ATASIGE, manfredmanfredo248@gmail.com
+- NYANTEH ASI ERICA, ericaasinyan@gmail.com
+- NARTEY THEOPHILUS, theonartey1234@gmail.com
+- GAKPETOR MAWULORM ABA TAMAR, tamargakpetor@gmail.com
+- MAUNGER CHRISTABEL, ayerkiekristy@gmail.com
+- TAFFAH GEORGINA, georginataffah50@gmail.com
+- BAFFOE COBBINA RICHMOND, lesronk@gmail.com
+- BOATENG IVY, eyevee.btg@gmail.com
+- APPIAH-OPOKU SERBEH SAMUEL, samuelopokuappiah123@gmail.com
+- OFORI SERWAA MERCY, mercyofori2007@gmail.com
+- LARTEY ASHORKOR ETHEL, naaashorkorlea@gmail.com
+- OFORI PRECIOUS, p36913606@gmail.com
+- GBEMU EUNICE, gbemueunice99@gmail.com
+- AHULU DEDE BELINDA, belindaahulu727@gmail.com
+- MACCARTHY SMILING SAKYIABEA, sakyiabeamccarthy243@gmail.com
+- JAPIONG BAAJEN EBENENZER, ebenezerbaajen@gmail.com
+- ANTWI-ADJEI OFORIWAA DORNA, oforiwadorna@gmail.com
+- MOHAMMED HAWAH, mohammedhawah396@gmail.com
+- ARTHUR OWUSU CHRISTOPHER, chrisoarthur@gmail.com
+- DAITEY SABUKI ERICA, daiteyerica@gmail.com
+- MOHAMMED NAWUSU RUKAYA, rumohammed475@gmail.com
+- TETTEH EMMANUEL, te243200@gmail.com
+- AYITTAH KABUTEY ALFRED, ayittahalfred@gmail.com
+- AGBEMAFLEY PATIENCE, agbemaflepatience19@ gmail.com
+- BRAIMAH YAW BENSON, braimahbenson1@gmail.com
+- KORANTENG OFORIWAH DAISLYNN, daislynnoforiwahkoranteng153@gmail.com
+- ADDO ANIM DANIEL, yawtog21@gmail.com
+- BORTIER BORTEY CEPHAS, bortiercephas9@gmail.com
+- OBENEWAA COMFORT, obenewaa6024@gmail.com
+- BINDATI KUNAWU MICHEAL, bindatimicheal45@gmail.com
+- ESHUN PERFECT EBO JOSEPH, eshunjoseph5478@gmail.com
+- QUAYE OSEKU GABRIEL, quayegabriel143@gmail.com
+- RUFUS OLUWASEGUN PRECIOUS, afiagoddess123@gmail.com
+- BATURE SUWEBA, suwebabature67@gmail.com
+- DUODUWAA HAWA, hawaesiduoduwaa@gmail.com
+- AGYEKUM FRIMPOMAA EMMANUELLA, emmanuellafrimpomaa756@gmail.com
+- STELLA OKAI, okaistella66@gmail.com
+- Eric Nartey, narteye018@gmail.com
+- Abena Anima Adjei, animaabena1518@gmail.com
+- EMMANUEL HAMILTON KWOFIE, nuelhilton000@gmail.com
+- DANIELLA KESSON MAAME NTSIMA, kessondaniella@gmail.com
+- Eva Darko, abenaeva18@icloud.com
+- Abigail Anegyemene, anegyemenea@gmail.com
+- Andrew Gyampoh Kwakye, andrewgyampoh616@gmail.com
+- GABRIEL PAINTSIL, scripturemystic@gmail.com
+- Esther Dzivor Makafui, dzivormakafui370@gmail.com
+- Ishmael Awini Abdul Sabik, Ishmaelawini08@gmail.com
+- Rachael Domey, rachaeldomey@gmail.com
+- FAREEDATU SHABAN, fareedatushaban@gmail.com
+- JOSEPH NAATIB NAAYAM, naatibjosephnaayam@gmail.com
+- Michael Anum Junior Awenanya, jrmichaelanum47@gmail.com
+- FADILA JINUMAH, fadilajinumah@gmail.com
+- Victoria Gati Asiwome, simpl.yria66@gmail.com
+- NORA TAWIAH MAA ABENA, tawiahnora3@gmail.com
+- Frank Adu Kojo Arthur, frankarthur2929@gmail.com
+- KUBURATU ABDULAI, abdulaikuburatu6@gmail.com
+- JONATHAN MEPSON OHENE, mepsonjonathanohene@gmail.com
+- SHANFFERY EHOAH ATTA, dontwinne@gmail.com
+- Kelvin Dorkenu Serlorm, kj700110@gmail.com
+- GIFTY EFFAH BOATEMAAH, boatemaaheffah@gmail.com
+- BERNARD AMFOH AWUKU, amfohbernardawuku12@gmail.com
+- DOROTHY GBERBIE NAADU BLESSING, dorothynblartey61@gmail.com
+- Doreen Awunor, Doreenawunor024@gmail.com
+- Revival Adzani, revivaladzani@gmail.com
+- Deborah Agyapong Kyerewaa, deborahb502250037@ktu.edu.gh
+- ABIGAIL LAWER DEDE, abigaildede850@gmail.com
+- Christiana Amponsah Boaduah, Amponsahchristiana16@gmail.com
+- Christopher Fekpe, Christopherfekpe1@gmail.com
+- Wisdom Aziawoh Addo, aziawohaddowisdom@gmail.com
+- JULIA PANFORD, juliepanford1906@gmail.com
+- Lawrence Abban Adzoyi Setorgy, abban.law18@gmail.com
+- TRACY AGYARKO SARFOA NANA YAA, agyarkotracysarfoananayaa@gmail.com
+- SUSAN VUDUGAH FAFALI, bigmaame720@Gmail.com
+- Dzidzor Amenuvor Kojo, kojokojoamenuvor123@gmail.com
+- Mary Amenyo, marilynamenyo2@gmail.com
+- CATHERINE AGBLEKE NORKPLIM, norkplimcatherine3@gmail.com
+- Faith Alorgbey Esenam, blessmeesinam@gmail.com
+- Blankson Gyimah Agyei, agyeiblanksongyimah@gmail.com
+- TSATSU EVANS, tsatsuevans158@gmail.com
+- ASABEA FRANCISCA, franciscaasabea05@gmail.com
+- DARKO BARBARA, barbaradarko051@gmail.com
+- FEDAH MARCELLINUS, mcllinusfedah@gmail.com
+- ACOLATSE ABDUL MAJEED ETSE TSATSU NACIL, acolatsenacil@gmail.com
+- FRIMPONG JOHNSON, johnsonf207@gmail.com
+- FUMMEY GODSLUV ELORM, gasmilla9990@gmail.com
+- JEHU-APPIAH ELKANAH, elkanah2020appiah@gmail.com
+- GYEKYE HAYFORD, hayfordgyekye99@gmail.com
+- DIABA DELA DORA, doradiaba627@gmail.com
+- GADASU EMMANUEL, emmanuelgadasu81@gmail.com
+- OFFEI KWAME MARTIN, martinoffei246@gmail.com
+- BOATENG-BREW AWULETEY RAYMOND, brewraymond07@gmail.com
+- SALIFU SAKINATU, salifusakinatu589@gmail.com
+- ASANTE OFORIWAA EDNA, ttednaoforiwaa19@gmail.com
+- FUSEINI IBRAHIM, fuseini335ibrahim@gmail.com
+- ABLORDE MARTIN, ablordemartin6@gmail.com
+- AYERNOR KOFI LAMPTEY BRIGHT, bayernor2024@gmail.com
+- AWULEY JELEMON MICHAEL, michaeljelemon@gmail.com
+- DARKO ADWOA YIRENKYIWAA SUSSAN, suzzanadarko@gmail.com
+- BOATENG AKWASI EDWARD, edwardakwasiboateng29@gmail.com
+- AYIEPO PRISCILLA, priscillaabassayiepo@gmail.com
+- NARTEY KORLEKIE FAUSTINA, narteykorlekiefaustina@gmail.com
+- AMPADU DAVID, ampadudavid409@gmail.com
+- OWUSU EMMANUEL, emmanuelowusu2303@gmail.com
+- ACQUAH GETHRUDE, gertrudeacquah6@gmail.com
+- BAAH JEFFREY, jbaah69@gmail.com
+- OSROAGBO TETTEH PAUL, paultetteh6688@gmail.com
+- AFARI-ODAME MANUELA, afarimanuela@gmail.com
+- BEWAALE NYE-AZA EVANS, evansbewaale@gmail.com
+- YEBOAH PRINCE, princeotygayeboah@gmail.com
+- NSOH AWINPOYA BENJAMIN, benjaminnsoh269@gmail.com
+- DANSO DOMINIC, dominicdasare1@gmail.com
+- OWUSU JUNIOR ROBERT, owusur783@gmail.com
+- TERKPER TETTEH PETER, peterterkper28@gmail.com
+- TANDOH ABIGAIL, tandohabigail05@gmail.com
+- ANTWI BOASIAKO DERRICK, antwiuzivert68@gmail.com
+- NUKPEZAH DANIEL MAWULI, nukpezahdaniel0@gmail.com
+- EYRAM DEY MAVIS, mavisdey@gmail.com
+- AWUNI CHRISTIANA, chrystyanaawuni@gmail.com
+- ABUAKU JESSICA KYEREWAA, jessakyerewaa@gmail.com
+- SIAW HAMID, shifamedic1@gmail.com
+- GYAN OSEI SAMPSON, sampsonnewmang@gmail.com
+- AGYAKWA MCLISTER, mclisterkrane1@gmail.com
+- MENSAH KWEI REUBEN, kweireuben@gmail.com
+- KWABLAH DOROTHY, kwablahdorothy@gmail.com
+- BAAH FESTUS, festusbaah653@gmail.com
+- BOAMAH EMMANUEL, boamahemmanuel38@gmail.com
+- FREDRICK GRACE, gracefredrick9@gmail.com
+- AKANWE CYNTHIA, nanaamacynthia25@gmail.com
+- BOATENG FLORENCE KYEREWAA, maamikyerewah@gmail.com
+- AFUDEGO NIMSON KWABLA, nimsonafudego2002@gmail.com
+- ABLEDU ETHEL DEM ABENA, edabledu@gmail.com
+- MENSAH EMMANUELLA DIVINA NYAMEDEA, emmanuelladivina@gmail.com
+- SARPONG SANDRA, sarpongsandra704@gmail.com
+- OSOMBAAH GODWIN, wisdomgodwin0020@gmail.com
+- BOSOMPEM PATIENCE OWIREDUA, patienceowireduabosompem8@gmail.com
+- AHEDOR ESTHER, ahedoresther1@gmail.com
+- OKUNOR PHILIP, okunorphilip12@gmail.com
+- OSEI DANIEL YAW, danielosei.17034@gmail.com
+- ISHMOUND MISSAH, kwasimissahishmound@gmail.com
+- ASIEDU SAMUEL, Florenceowiredu857@gmail.com
+- ACQUAH EMILY YAA AMAKYEWAA, emyleyaquah@gmail.com
+- IBRAHIM ADIZA, ibrahimadiza888@gmail.com
+- ADJEI BOATENG FRED, fredboatengadjei@gmail.com
+- TIETAA CORNELIOUS, tietaacornelious@gmail.com
+- OBERKOR FAVOUR, favouroberkor@gmail.com
+- ADU-GYAMFI JEFFERSON, kodjoadugyamfi017@gmail.com
+- ESSEL RUTH ESI, esselruth011@gmail.com
+- FIEVE GABRIEL CALVIN, fievegabriel@gmail.com
+- AMPAH JESSICA HAGGAN, jessicaampah06@gmail.com
+- AHETO AMPONSAH CATHERINE, cathaheto@gmail.com
+- ASIEDU FERGUSON, asieduferguson9@gmail.com
+- VADZE PRISCILLA, priscillavadze3@gmail.com
+- ASARE JULIUS, juliusasare22@gmail.com
+- AGORMEDAH ERICA, ericaagormedah@gmail.com
+- MARTEY PATRICK, patrickspiritmartey@gmail.com
+- OBENG BANFOA EMMANUELLA, nuella154@gmail.com
+- AIDOO GYAN NANA, gyann3675@gmail.com
+- MORO BARIKISU, morobarikisu96@gmail.com
+- DZAMESI ANGELINA, angelinadzamesi3@gmail.com
+- ADAMTEY RAYNOLD, raynoldadamtey257@gmail.com
+- ABDUL BASHIRU UMAR SANDA, umarbashiru26@gmail.com
+- PEPRAH MARIAM, miriampeprah3@gmail.com
+- DODI MANPHY CLIFFORD, dodiclifford@gmail.com
+- ADOBLANUI SETRIAKOR WILLIAM, wskadoblanui@gmail.com
+- TAHIRU ISSAKA, tahiruissaka07@gmail.com
+- MARTEY AIKINS, marteyaikins905@gmail.com
+- ODONKOR MILLICENT, millicentodonkor27@gmail.com
+- OCLOO JONAS, princeaddynoi@gmail.com
+- BAMPO COMFORT, bampocomfort3@gmail.com
+- ABAYATEYE PETER, abayateyepeter15@gmail.com
+- TWUMASI ADOMA ANABEL, twumasinana233@gmail.com
+- CONNIFF MELODY ESENAM, conniffmelody@gmail.com
+- ODAMEY ALBERT, aodame80@gmail.com
+- SIAW ALEXANDER, siawalexander985@gmail.com
+- WALLECE DANIEL, walleceddaniel@gmail.com
+- HARRISON DAVID TETTEY, harrisontettey71@gmail.com
+- DOTSEY BARRY ELORM-ATSU, elormatsu@gmail.com
+- DZIKUNU SELASI NUNYA, selasidzik@gmail.com
+- OFEI BLESSING NAA BORLEY, ofeibless@gmail.com
+- TETTEH EUGENIA NARTEKUOR, eugeniatetteh877@gmail.com
+- MAXWELL JUNIOR KWASI, maxwelljunior205@gmail.com
+- ADJORLOLO JOSHUA MARTEY OGBEY, adjorlolojoshua054@gmail.com
+- BOTCHWEY AKUA PHYLLIS, botchweyphyllis1@gmail.com
+- MARKWEI ALEXANDER MARMAH CALEB, 389calebphycano@gmail.com
+- DATSOMOR DOGBEDA, jornb656@gmail.com
+- MENSAH DORCAS TABITHA, tabitha.mensah14@gmail.com
+- KLU AKU EMEFA, akuemefa87@gmail.com
+- PONYE BRIGHT, ponyebright21@gmail.com
+- MOSES JUSTICE ANDREW, mosesandrewjustice@gmail.com
+- ANTWI ABABOI NATHANIEL, brahnath33@gmail.com
+- OPOKU CHARLES, copoku138@gmail.com
+- ADDY DENNIS, dennisaddy100@gmail.com
+- ACCAM CHRISTABEL ADINORKUOR, christabelaccam8@gmail.com
+- BAIDEN PHILOMENA, baidenphilomena488@gmail.com
+- AGBOTTAH GODKNOWS SELINAM, godknowsagbottah@gmail.com
+- GYAMFUA RACHEL KYEI, akosuacherrygyamfua@gmail.com
+- ALIMATU YUSAW, alimatuyusaw04@gmail.com`;
+
+function normalizeEmail(email) { return String(email || '').trim().replace(/\s+/g, '').toLowerCase(); }
+
+const emails = [...new Set(
+  [...text.matchAll(/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/g)].map((m) => normalizeEmail(m[0]))
+)];
+
+const db = new sqlite3.Database('./database.sqlite');
+
+db.serialize(() => {
+  db.run('DELETE FROM approved_students');
+  const stmt = db.prepare('INSERT INTO approved_students (firstName, lastName, email, indexNumber, level, programme, sourceFile) VALUES (?, ?, ?, ?, ?, ?, ?)');
+  for (const email of emails) {
+    const name = email.split('@')[0].replace(/[^a-zA-Z]/g, ' ');
+    const firstName = name.trim().split(/\s+/)[0] || 'Student';
+    const lastName = name.trim().split(/\s+/).slice(1).join(' ') || 'Approved';
+    stmt.run(firstName, lastName, email, '400', '400', 'GENERAL', 'manual_list');
+  }
+  stmt.finalize(() => {
+    db.get('SELECT COUNT(*) AS total FROM approved_students', (err, row) => {
+      if (err) throw err;
+      console.log('APPROVED_COUNT=' + row.total);
+      console.log('FIRST_EMAILS=' + emails.slice(0, 5).join(', '));
+      db.close();
+      const testEmail = 'manmaraste444@gmail.com';
+      const payload = JSON.stringify({ firstName: 'Stephen', lastName: 'Manmara', email: testEmail });
+      const req = http.request({ hostname: 'localhost', port: 3000, path: '/api/student/register', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) } }, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => {
+          console.log('REGISTER_STATUS=' + res.statusCode);
+          console.log('REGISTER_BODY=' + body);
+          const loginPayload = JSON.stringify({ firstName: 'Stephen', lastName: 'Manmara', email: testEmail });
+          const loginReq = http.request({ hostname: 'localhost', port: 3000, path: '/api/student/login', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(loginPayload) } }, (loginRes) => {
+            let loginBody = '';
+            loginRes.on('data', (chunk) => loginBody += chunk);
+            loginRes.on('end', () => {
+              console.log('LOGIN_STATUS=' + loginRes.statusCode);
+              console.log('LOGIN_BODY=' + loginBody);
+              process.exit(0);
+            });
+          });
+          loginReq.on('error', (err) => { console.error('LOGIN_ERR=' + err.message); process.exit(1); });
+          loginReq.write(loginPayload);
+          loginReq.end();
+        });
+      });
+      req.on('error', (err) => { console.error('REGISTER_ERR=' + err.message); process.exit(1); });
+      req.write(payload);
+      req.end();
+    });
+  });
+});

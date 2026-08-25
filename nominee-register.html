@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nominee Register | KTU Election</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --green: #0f766e;
+      --gold: #d97706;
+      --shadow: 0 24px 50px rgba(15, 23, 42, 0.2);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      font-family: Arial,sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+    }
+    .auth-shell {
+      width: min(980px,100%);
+      max-width: 980px;
+      min-height: 680px;
+      display: grid;
+      grid-template-columns: 1.05fr 1.4fr;
+      background: rgba(255,255,255,0.96);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.2);
+      animation: panelIn 0.7s ease;
+      margin: 0 auto;
+    }
+    .auth-brand {
+      position: relative;
+      background: linear-gradient(170deg, rgba(15,23,42,0.95), rgba(29,78,216,0.9));
+      color: white;
+      padding: 42px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+    .auth-brand::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.06));
+    }
+    .auth-brand > * { position: relative; z-index: 1; }
+    .auth-brand img {
+      width: 92px; height: 92px; object-fit: contain; border-radius: 18px; background: rgba(255,255,255,0.12); padding: 10px;
+    }
+    .eyebrow { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.72rem; font-weight: 800; color: rgba(255,255,255,0.8); }
+    .auth-brand h1 { margin: 0; color: #facc15; font-size: clamp(2rem, 3vw, 2.8rem); }
+    .auth-brand p { margin: 0; color: rgba(255,255,255,0.8); font-size: 1.02rem; }
+    .auth-panel {
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(255,255,255,0.96);
+      align-items: stretch;
+    }
+    .top-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px;
+    }
+    .top-row a { text-decoration: none; color: #1d4ed8; font-weight: 700; }
+    .auth-panel h2 { margin: 0 0 10px; font-size: 2rem; color: var(--navy); }
+    .form-grid { display: grid; gap: 16px; width: 100%; }
+    label { display: block; margin-bottom: 8px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #dbe3ef; font-size: 1rem; background: #fff; transition: all 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96,165,250,0.16); }
+    textarea { min-height: 110px; resize: vertical; }
+    .btn {
+      border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; width: 100%; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.success { background: linear-gradient(135deg, #0f766e, #0f9f8c); color: white; }
+    .switcher {
+      margin-top: 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.95rem; color: #475569;
+    }
+    .switcher a { color: #1d4ed8; font-weight: 700; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 15px 16px; margin-top: 16px; font-weight: 600;
+    }
+    .hidden { display: none !important; }
+    @keyframes panelIn { from { opacity: 0; transform: translateY(18px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (max-width: 760px) { .auth-shell { grid-template-columns: 1fr; } .auth-brand { min-height: 220px; } }
+  </style>
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" />
+      <div class="eyebrow">Koforidua Technical University</div>
+      <h1>Nominee Register</h1>
+      <p>Build your profile and campaign for the KTU portfolio election.</p>
+    </div>
+
+    <div class="auth-panel">
+      <div class="top-row">
+        <span class="eyebrow">Nominee Portal</span>
+        <a href="index.html">← Home</a>
+      </div>
+      <h2>Create Account</h2>
+      <form id="nomineeRegisterForm" class="form-grid">
+        <div>
+          <label for="registerNomineeName">Full name</label>
+          <input id="registerNomineeName" type="text" placeholder="Enter your full name" required />
+        </div>
+        <div>
+          <label for="registerNomineeEmail">Email</label>
+          <input id="registerNomineeEmail" type="email" placeholder="nominee@ktu.edu.gh" required />
+        </div>
+        <div>
+          <label for="registerNomineePassword">Password</label>
+          <input id="registerNomineePassword" type="password" placeholder="Create password" required />
+        </div>
+        <div>
+          <label for="registerNomineePortfolio">Portfolio</label>
+          <select id="registerNomineePortfolio" required>
+            <option value="">Select portfolio</option>
+            <option value="President">President</option>
+            <option value="Vice President">Vice President</option>
+            <option value="General Secretary">General Secretary</option>
+            <option value="Public Relations Officer">Public Relations Officer</option>
+            <option value="Financial Officer">Financial Officer</option>
+            <option value="Organizer">Organizer</option>
+            <option value="Women Commissioner">Women Commissioner</option>
+          </select>
+        </div>
+        <div>
+          <label for="registerNomineeProgramme">Programme</label>
+          <select id="registerNomineeProgramme" required>
+            <option value="BTECH">BTECH</option>
+            <option value="HND">HND</option>
+          </select>
+        </div>
+        <div>
+          <label for="registerNomineeLevel">Level</label>
+          <select id="registerNomineeLevel" required>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+          </select>
+        </div>
+        <div>
+          <label for="registerNomineePhoto">Profile photo</label>
+          <input id="registerNomineePhoto" type="file" accept="image/*" />
+        </div>
+        <div>
+          <label for="registerNomineeBio">Short bio</label>
+          <textarea id="registerNomineeBio" placeholder="Tell voters about yourself"></textarea>
+        </div>
+        <div>
+          <label for="registerNomineeManifesto">Manifesto</label>
+          <textarea id="registerNomineeManifesto" placeholder="Share your vision"></textarea>
+        </div>
+        <button class="btn success" type="submit">Create Nominee Account</button>
+      </form>
+
+      <div class="switcher">
+        <span>Already registered?</span>
+        <a href="nominee-login.html">Login here</a>
+      </div>
+      <div id="nomineeMessage" class="notice hidden"></div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

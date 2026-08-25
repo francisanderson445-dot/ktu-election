@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KTU Portfolio Voting</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --green: #0f766e;
+      --gold: #d97706;
+      --bg: #eef4ff;
+      --card: rgba(255,255,255,0.96);
+      --text: #1f2937;
+      --muted: #5f6c7b;
+      --danger: #b91c1c;
+      --success: #15803d;
+      --shadow: 0 20px 45px rgba(17, 24, 39, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        linear-gradient(rgba(10, 22, 40, 0.68), rgba(10, 22, 40, 0.68)),
+        url('https://www.ktu.edu.gh/wp-content/themes/jupiterx/images/logo.png') center/cover no-repeat fixed;
+      color: var(--text);
+    }
+    a { text-decoration: none; color: inherit; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .topbar {
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 18px 0;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .topbar-inner {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      padding: 4px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: none; border-radius: 12px; padding: 11px 18px; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      display: inline-block;
+      box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { cursor: not-allowed; opacity: 0.6; transform: none; }
+    .btn.primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+    .btn.secondary { background: white; color: var(--navy); border: 1px solid #dfe8f5; }
+    .btn.success { background: linear-gradient(135deg, #0f766e, #0f9f8c); color: white; }
+    .btn.warn { background: var(--gold); color: white; }
+    .btn.danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0ea5e9 100%);
+      color: white;
+      padding: 80px 0 60px;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; align-items: center;
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    }
+    h1 { font-size: clamp(2rem, 4vw, 4rem); margin: 0 0 12px; }
+    .hero p { color: #dbeafe; font-size: 1.1rem; }
+    .stats-box {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 26px;
+      box-shadow: var(--shadow);
+    }
+    .stat-grid { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 18px; margin-top: 18px; }
+    .mini-stat { background: rgba(255,255,255,0.06); padding: 18px; border-radius: 12px; }
+    .mini-stat strong { display:block; font-size: 1.6rem; }
+    .section { padding: 52px 0; }
+    .section-header { text-align: center; margin-bottom: 28px; }
+    .section-header h2 { margin: 0 0 8px; font-size: 2rem; }
+    .grid { display: grid; gap: 22px; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: var(--card); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); border: 1px solid #e5edf7;
+    }
+    .login-box {
+      max-width: 520px; margin: 0 auto;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(239,246,255,0.96));
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .form-grid { display: grid; gap: 16px; }
+    label { display: block; margin-bottom: 8px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #dbe3ef; font-size: 1rem;
+      background: #fff; color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 15px 16px;
+      margin-top: 16px; font-weight: 600;
+    }
+    .nominee-list, .record-table { width: 100%; border-collapse: collapse; }
+    .nominee-list th, .nominee-list td, .record-table th, .record-table td {
+      border-bottom: 1px solid #e5e7eb; padding: 12px 10px; text-align: left;
+    }
+    .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+    .badge.open { background: #dcfce7; color: #166534; }
+    .badge.closed { background: #fee2e2; color: #991b1b; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .num { font-size: 2rem; font-weight: 700; }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .muted { color: var(--muted); }
+    .hidden { display: none !important; }
+    .vote-btn { background: linear-gradient(135deg, #0f766e, #10b981); color: white; }
+    @media (max-width: 800px) {
+      .hero-grid, .three, .dashboard-grid { grid-template-columns: 1fr; }
+      .topbar-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" />
+        <span>KTU Portfolio Election</span>
+      </div>
+      <div class="actions">
+        <button class="btn secondary" type="button" onclick="window.location.href='student-login.html'">Student Login</button>
+        <button class="btn secondary" type="button" onclick="window.location.href='nominee-login.html'">Nominees</button>
+        <button class="btn secondary" type="button" onclick="window.location.href='admin-login.html'">Admin Login</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <h1>Level 400 Students Vote for Portfolio Leaders</h1>
+        <p>Secure online voting for Koforidua Technical University students. Students register with their personal email, programme, and level, and nominees are added and managed by the admin.</p>
+        <div class="actions" style="margin-top: 20px;">
+          <button class="btn primary" type="button" onclick="window.location.href='student-login.html'">Login as Student</button>
+          <button class="btn secondary" type="button" onclick="window.location.href='nominee-login.html'">View Nominees</button>
+        </div>
+      </div>
+      <div class="stats-box">
+        <div class="muted">Election status</div>
+        <div id="siteStatusBadge" class="badge open">Voting Open</div>
+        <div class="stat-grid">
+          <div class="mini-stat"><span class="muted">Max voters</span><strong id="maxVotersStat">400</strong></div>
+          <div class="mini-stat"><span class="muted">Voters</span><strong id="votesCastStat">0</strong></div>
+          <div class="mini-stat"><span class="muted">Nominees</span><strong id="nomineeCountStat">0</strong></div>
+          <div class="mini-stat"><span class="muted">Turnout</span><strong id="turnoutStat">0%</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container"></main>
+
+  <script src="main.js"></script>
+</body>
+</html>

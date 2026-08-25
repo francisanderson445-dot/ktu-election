@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nominee Dashboard | KTU Election</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --green: #0f766e;
+      --gold: #d97706;
+      --shadow: 0 20px 45px rgba(17, 24, 39, 0.12);
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #5f6c7b;
+      --danger: #b91c1c;
+      --success: #15803d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7ff;
+      color: var(--text);
+    }
+    .topbar {
+      background: rgba(15, 23, 42, 0.94);
+      color: white;
+      padding: 18px 0;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+    .topbar-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.04em;
+    }
+    .brand img {
+      width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.12); padding: 4px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: none; border-radius: 12px; padding: 11px 18px; font-weight: 700; cursor: pointer; display: inline-block; transition: transform 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+    .btn.success { background: linear-gradient(135deg, #0f766e, #0f9f8c); color: white; }
+    .btn.danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .dashboard {
+      background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 28px; border: 1px solid #e5edf7;
+    }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .profile-box { display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: center; margin-top: 22px; }
+    .photo {
+      width: 130px; height: 130px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #dbe3ef; display: block;
+    }
+    .muted { color: var(--muted); }
+    .form-grid { display: grid; gap: 16px; margin-top: 24px; }
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    label { display: block; margin-bottom: 8px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #dbe3ef; font-size: 1rem; background: #fff; color: var(--text);
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16); }
+    textarea { min-height: 110px; resize: vertical; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 14px 16px; margin-top: 18px; font-weight: 600;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 700px) { .two-col, .profile-box { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" />
+        <span>KTU Portfolio Election</span>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="button" onclick="window.location.href='index.html'">Home</button>
+        <button class="btn danger" type="button" onclick="logoutNominee()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="nomineeDashboard" class="dashboard">
+      <div class="head">
+        <div>
+          <h2>Nominee Dashboard</h2>
+          <p id="nomineeProfileSummary" class="muted">Loading profile...</p>
+        </div>
+        <button class="btn danger" type="button" onclick="logoutNominee()">Logout</button>
+      </div>
+
+      <div class="profile-box">
+        <img id="profilePhotoPreview" class="photo" alt="Nominee photo" />
+        <div>
+          <p class="muted">Your profile is visible to voters and helps them recognize your portfolio.</p>
+        </div>
+      </div>
+
+      <form id="nomineeProfileForm" class="form-grid">
+        <div>
+          <label for="profilePhotoInput">Upload profile picture</label>
+          <input id="profilePhotoInput" type="file" accept="image/*" />
+        </div>
+
+        <div class="two-col">
+          <div>
+            <label for="profileName">Full name</label>
+            <input id="profileName" required />
+          </div>
+          <div>
+            <label for="profilePortfolio">Portfolio</label>
+            <input id="profilePortfolio" required />
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <label for="profileProgramme">Programme</label>
+            <select id="profileProgramme">
+              <option value="BTECH">BTECH</option>
+              <option value="HND">HND</option>
+            </select>
+          </div>
+          <div>
+            <label for="profileLevel">Level</label>
+            <select id="profileLevel">
+              <option value="100">100</option>
+              <option value="200">200</option>
+              <option value="300">300</option>
+              <option value="400">400</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="profileBio">Short bio</label>
+          <textarea id="profileBio"></textarea>
+        </div>
+
+        <div>
+          <label for="profileManifesto">Manifesto</label>
+          <textarea id="profileManifesto"></textarea>
+        </div>
+
+        <button class="btn success" type="submit">Save Profile</button>
+      </form>
+
+      <div id="nomineeMessage" class="notice hidden"></div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>

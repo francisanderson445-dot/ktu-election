@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="KTU logo">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="220" rx="36" fill="url(#g2)"/>
+  <path d="M55 168V96l55-37 55 37v72H55zm18-16h74V109L110 82l-37 27v43zm18-14v-24h38v24h-38zm-14-47h66l-33-21-33 21z" fill="#fff" opacity="0.96"/>
+  <path d="M70 82h80l-40-28-40 28z" fill="url(#g1)" opacity="0.9"/>
+  <text x="110" y="182" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#f8fafc">KTU</text>
+</svg>

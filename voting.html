@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Voting Panel</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --green: #0f766e;
+      --gold: #d97706;
+      --bg: #eef4ff;
+      --card: rgba(255,255,255,0.96);
+      --text: #1f2937;
+      --muted: #5f6c7b;
+      --danger: #b91c1c;
+      --success: #15803d;
+      --shadow: 0 20px 45px rgba(17, 24, 39, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        linear-gradient(rgba(10, 22, 40, 0.64), rgba(10, 22, 40, 0.64)),
+        url('assets/branding/ktu-campus.svg') center/cover no-repeat fixed;
+      color: var(--text);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+    .topbar {
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 18px 0;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .topbar-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 20px;
+      display: flex; justify-content: space-between; align-items: center; gap: 20px;
+    }
+    .brand { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.04em; }
+    .btn {
+      border: none; border-radius: 12px; padding: 10px 18px; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+    .card {
+      background: var(--card); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); border: 1px solid #e5edf7;
+    }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .muted { color: var(--muted); }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .num { font-size: 2rem; font-weight: 700; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 15px 16px; margin-top: 16px; font-weight: 600;
+    }
+    .hidden { display: none !important; }
+    .nominee-list { display: grid; gap: 18px; }
+    .vote-btn {
+      background: linear-gradient(135deg, #0f766e, #10b981); color: white;
+      width: 100%; margin-top: 12px;
+    }
+    .badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+    .badge.open { background: #dcfce7; color: #166534; }
+    .badge.closed { background: #fee2e2; color: #991b1b; }
+    @media (max-width: 800px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .topbar-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" style="display:flex; align-items:center; gap:12px;">
+        <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.12);padding:4px;" />
+        <span>KTU Portfolio Voting</span>
+      </div>
+      <button class="btn danger" type="button" onclick="logoutStudent();">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" style="margin-bottom: 24px;">
+      <div class="head">
+        <div>
+          <h2>Student Dashboard</h2>
+          <p id="studentGreeting" class="muted">Welcome</p>
+        </div>
+        <div id="siteStatusBadge" class="badge open">Voting Open</div>
+      </div>
+
+      <div class="dashboard-grid" style="margin-top: 20px;">
+        <div class="card"><div class="muted">Name</div><div id="studentName" class="num">-</div></div>
+        <div class="card"><div class="muted">Level</div><div id="studentIndexDisplay" class="num">-</div></div>
+        <div class="card"><div class="muted">Programme</div><div id="studentProgramme" class="num">-</div></div>
+        <div class="card"><div class="muted">Status</div><div id="studentStatus" class="num">Not Voted</div></div>
+      </div>
+      <div id="studentMessage" class="notice hidden"></div>
+    </section>
+
+    <section class="card">
+      <h3>Nominees</h3>
+      <div id="nomineeCards" class="nominee-list" style="margin-top: 18px;"></div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const studentToken = getStoredToken('studentToken');
+      if (!studentToken) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        await showStudentDashboard();
+      } catch (error) {
+        console.error(error);
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

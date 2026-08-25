@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#dbeafe" stop-opacity="0.52"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#bfdbfe" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <g opacity="0.88">
+    <rect x="90" y="520" width="1040" height="180" fill="#93c5fd" opacity="0.18"/>
+    <path d="M150 560h180v120H150zM355 470h180v210H355zM560 420h180v260H560zM765 500h180v180H765zM970 540h120v140H970z" fill="#1d4ed8" opacity="0.18"/>
+    <path d="M180 580h120v90H180zm35-65h50v65h-50zm-60 0h50v65H155zm80 0h50v65h-50zm180-40h120v130H395zm35-55h50v55h-50zm-85 0h50v55h-50zm80 0h50v55h-50zm180-35h120v165H590zm35-55h50v55h-50zm-85 0h50v55h-50zm80 0h50v55h-50zm185-20h120v185H775zm35-45h50v45h-50zm-85 0h50v45h-50zm80 0h50v45h-50zm180-20h55v205h-55z" fill="url(#glass)"/>
+    <path d="M110 630h980" stroke="#1e3a8a" stroke-width="8" opacity="0.25"/>
+    <path d="M190 600h100" stroke="#fbbf24" stroke-width="8" opacity="0.5"/>
+    <path d="M400 600h100" stroke="#fbbf24" stroke-width="8" opacity="0.5"/>
+    <path d="M610 600h100" stroke="#fbbf24" stroke-width="8" opacity="0.5"/>
+    <path d="M815 600h100" stroke="#fbbf24" stroke-width="8" opacity="0.5"/>
+    <path d="M1000 600h60" stroke="#fbbf24" stroke-width="8" opacity="0.5"/>
+  </g>
+</svg>

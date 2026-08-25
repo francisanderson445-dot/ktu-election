@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | KTU Election</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --gold: #d97706;
+      --text: #1f2937;
+      --muted: #5f6c7b;
+      --card: #ffffff;
+      --shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7ff;
+      color: var(--text);
+    }
+    .auth-shell {
+      width: min(900px,100%);
+      max-width: 900px;
+      min-height: 500px;
+      display: grid;
+      grid-template-columns: 1.05fr 1.35fr;
+      background: rgba(255,255,255,0.96);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.2);
+      animation: panelIn 0.7s ease;
+      margin: 32px auto;
+    }
+    .auth-brand {
+      position: relative;
+      background: linear-gradient(170deg, rgba(15,23,42,0.95), rgba(29,78,216,0.9));
+      color: white;
+      padding: 42px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+    .auth-brand::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.06));
+    }
+    .auth-brand > * { position: relative; z-index: 1; }
+    .auth-brand img {
+      width: 92px; height: 92px; object-fit: contain; border-radius: 18px; background: rgba(255,255,255,0.12); padding: 10px;
+    }
+    .eyebrow { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.72rem; font-weight: 800; color: rgba(255,255,255,0.8); }
+    .auth-brand h1 { margin: 0; color: #facc15; font-size: clamp(2rem, 3vw, 2.8rem); }
+    .auth-brand p { margin: 0; color: rgba(255,255,255,0.8); font-size: 1.02rem; }
+    .auth-panel {
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(255,255,255,0.96);
+      align-items: stretch;
+    }
+    .top-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px;
+    }
+    .top-row a { text-decoration: none; color: #1d4ed8; font-weight: 700; }
+    .auth-panel h2 { margin: 0 0 10px; font-size: 2rem; color: var(--navy); }
+    .form-grid { display: grid; gap: 16px; width: 100%; }
+    label { display: block; margin-bottom: 8px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #dbe3ef; font-size: 1rem; background: #fff; transition: all 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96,165,250,0.16); }
+    .btn {
+      border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; width: 100%; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+    .btn.secondary { background: #e2e8f0; color: var(--navy); }
+    .btn.danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 15px 16px; margin-top: 16px; font-weight: 600;
+    }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+    .dashboard-shell {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid #e5edf7;
+      overflow: hidden;
+    }
+    .dashboard-body { padding: 22px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .stat-box {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px;
+    }
+    .stat-box h4 { margin: 0 0 8px; color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat-box strong { font-size: 1.8rem; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .panel {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px;
+    }
+    .panel h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; }
+    .hidden { display: none !important; }
+    @keyframes panelIn { from { opacity: 0; transform: translateY(18px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (max-width: 760px) { .auth-shell { grid-template-columns: 1fr; } .auth-brand { min-height: 220px; } .stats-grid, .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" />
+      <div class="eyebrow">Koforidua Technical University</div>
+      <h1>Admin Access</h1>
+      <p>Manage voting records, configure election status, and add nominees.</p>
+    </div>
+
+    <div class="auth-panel">
+      <div class="top-row">
+        <span class="eyebrow">Admin Panel</span>
+        <a href="index.html">← Home</a>
+      </div>
+      <h2>Login</h2>
+      <form id="adminLoginForm" class="form-grid">
+        <div>
+          <label for="adminUser">Username</label>
+          <input id="adminUser" type="text" placeholder="Enter admin username" required />
+        </div>
+        <div>
+          <label for="adminPass">Password</label>
+          <input id="adminPass" type="password" placeholder="Enter admin password" required />
+        </div>
+        <button class="btn primary" type="submit">Login as Admin</button>
+      </form>
+      <div id="adminMessage" class="notice hidden"></div>
+    </div>
+  </div>
+
+  <section id="adminDashboard" class="dashboard">
+    <div class="dashboard-shell">
+      <div class="dashboard-body">
+        <div class="stats-grid">
+          <div class="stat-box"><h4>Total Students</h4><strong id="adminTotalStudents">0</strong></div>
+          <div class="stat-box"><h4>Votes Cast</h4><strong id="adminVotesCast">0</strong></div>
+          <div class="stat-box"><h4>Nominees</h4><strong id="adminNominees">0</strong></div>
+          <div class="stat-box"><h4>Turnout</h4><strong id="adminTurnout">0%</strong></div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <h3 id="adminVotingStatus">Voting status: Open</h3>
+            <p id="adminGreeting">Winner: Pending</p>
+            <p id="winnerDisplay">No winner declared yet.</p>
+            <div class="form-grid" style="margin-top:12px;">
+              <button id="syncClassListBtn" class="btn secondary" type="button">Load Class List</button>
+              <button id="openVotingBtn" class="btn secondary" type="button">Open Voting</button>
+              <button id="closeVotingBtn" class="btn danger" type="button">Close Voting</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Add Nominee</h3>
+            <form id="adminNomineeForm" class="form-grid">
+              <input id="adminNomineeName" type="text" placeholder="Full name" required />
+              <input id="adminNomineeEmail" type="email" placeholder="Email" required />
+              <input id="adminNomineePassword" type="password" placeholder="Default password (optional)" />
+              <select id="adminNomineePortfolio" required>
+                <option value="">Select portfolio</option>
+                <option value="President">President</option>
+                <option value="Vice President">Vice President</option>
+                <option value="General Secretary">General Secretary</option>
+                <option value="Public Relations Officer">Public Relations Officer</option>
+                <option value="Financial Officer">Financial Officer</option>
+                <option value="Organizer">Organizer</option>
+                <option value="Women Commissioner">Women Commissioner</option>
+              </select>
+              <textarea id="adminNomineeBio" placeholder="Short bio"></textarea>
+              <textarea id="adminNomineeManifesto" placeholder="Manifesto"></textarea>
+              <input id="adminNomineePhoto" type="file" accept="image/*" />
+              <select id="adminNomineeProgramme" required>
+                <option value="BTECH">BTECH</option>
+                <option value="HND">HND</option>
+              </select>
+              <select id="adminNomineeLevel" required>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="400">400</option>
+              </select>
+              <button class="btn primary" type="submit">Add Nominee</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <h3>Add Approved Students</h3>
+          <form id="bulkApprovedStudentsForm" class="form-grid">
+            <textarea id="bulkApprovedStudentsInput" rows="8" placeholder="Paste one student per line using this format: Full Name, email@example.com"></textarea>
+            <button class="btn primary" type="submit">Add Approved Students</button>
+          </form>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <h3>Approved Students</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Programme</th>
+                <th>Level</th>
+                <th>Voted</th>
+              </tr>
+            </thead>
+            <tbody id="approvedStudentsTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <h3>Registered Nominees</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Portfolio</th>
+                <th>Programme</th>
+                <th>Level</th>
+                <th>Votes</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminNomineeTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <h3>Voting Records</h3>
+          <div style="margin-bottom:12px;">
+            <button id="exportVotesBtn" class="btn secondary" type="button">Download Voters CSV</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Programme</th>
+                <th>Level</th>
+                <th>Voted For</th>
+                <th>Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="main.js"></script>
+</body>
+</html>

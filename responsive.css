@@ -1,0 +1,447 @@
+/* ============================================
+   RESPONSIVE DESIGN - Mobile & Tablet
+   ============================================ */
+
+/* Tablet: 768px and below */
+@media (max-width: 768px) {
+    
+    /* Hero Section */
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-2xl);
+    }
+    
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    /* Navigation */
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background-color: var(--primary-navy);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: var(--shadow-md);
+        padding: var(--spacing-lg) 0;
+        gap: 0;
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-menu li {
+        padding: var(--spacing-md) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-toggle {
+        display: flex;
+    }
+    
+    /* Section Titles */
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: var(--spacing-2xl);
+    }
+    
+    /* Info Grid */
+    .info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    /* Rules */
+    .rules-content {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Countdown */
+    .countdown {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .countdown-value {
+        font-size: 2rem;
+    }
+    
+    /* Form */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: var(--spacing-md);
+    }
+}
+
+/* Mobile: 480px and below */
+@media (max-width: 480px) {
+    
+    /* Base */
+    body {
+        font-size: 15px;
+    }
+    
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    /* Navigation */
+    .nav-container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .nav-logo {
+        font-size: 1.1rem;
+        gap: var(--spacing-sm);
+    }
+    
+    .logo-img {
+        height: 35px;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding: var(--spacing-2xl) 0;
+        min-height: auto;
+    }
+    
+    .hero-content {
+        padding: 0 var(--spacing-md);
+    }
+    
+    .hero-text h1 {
+        font-size: 1.8rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .hero-text h2 {
+        font-size: 1.3rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .hero-tagline {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .hero-description {
+        font-size: 0.95rem;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .btn {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 0.9rem;
+    }
+    
+    /* Countdown Card */
+    .countdown-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .countdown-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .countdown {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+    
+    .countdown-value {
+        font-size: 1.8rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.8rem;
+    }
+    
+    /* Section */
+    .election-info,
+    .how-to-vote,
+    .rules {
+        padding: var(--spacing-2xl) 0;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-2xl);
+    }
+    
+    .section-title::after {
+        width: 60px;
+        height: 3px;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .info-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .info-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .info-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    /* Steps Grid */
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .step-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .step-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .step-card p {
+        font-size: 0.9rem;
+    }
+    
+    /* Warning Box */
+    .warning-box {
+        padding: var(--spacing-md);
+        font-size: 0.95rem;
+    }
+    
+    /* Rules */
+    .rules-content {
+        gap: var(--spacing-lg);
+    }
+    
+    .rules-column {
+        padding: var(--spacing-lg);
+    }
+    
+    .rules-column h3 {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .rules-column li {
+        padding: var(--spacing-sm) 0;
+        font-size: 0.95rem;
+    }
+    
+    /* Footer */
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    /* Forms */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: var(--spacing-md);
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Tables */
+    table {
+        font-size: 0.85rem;
+    }
+    
+    /* Cards */
+    .card {
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+}
+
+/* Extra Small Devices: 360px and below */
+@media (max-width: 360px) {
+    
+    .hero-text h1 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 1.1rem;
+    }
+    
+    .countdown {
+        grid-template-columns: 1fr;
+    }
+    
+    .countdown-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* Large Screens: 1200px and above */
+@media (min-width: 1200px) {
+    
+    .container {
+        max-width: 1200px;
+    }
+    
+    /* Hero */
+    .hero-text h1 {
+        font-size: 4rem;
+    }
+    
+    .hero-text h2 {
+        font-size: 2.8rem;
+    }
+    
+    /* Section Title */
+    .section-title {
+        font-size: 3rem;
+    }
+    
+    /* Cards */
+    .info-grid,
+    .steps-grid {
+        gap: var(--spacing-3xl);
+    }
+    
+    .card {
+        padding: var(--spacing-2xl);
+    }
+}
+
+/* Orientation: Landscape */
+@media (orientation: landscape) and (max-height: 500px) {
+    
+    .hero {
+        min-height: 400px;
+        padding: var(--spacing-xl) 0;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.5rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .hero-text h2 {
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .hero-buttons {
+        gap: var(--spacing-md);
+    }
+}
+
+/* Print Styles */
+@media print {
+    
+    .navbar,
+    .footer,
+    .nav-toggle,
+    .hero-buttons,
+    .btn {
+        display: none !important;
+    }
+    
+    body {
+        background-color: var(--primary-white);
+        color: var(--primary-navy);
+    }
+    
+    a {
+        text-decoration: underline;
+    }
+    
+    .container {
+        max-width: 100%;
+    }
+    
+    page {
+        margin: 0;
+    }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    
+    /* Uncomment to add dark mode support */
+    /* 
+    :root {
+        --primary-white: #1a1a1a;
+        --secondary-light-gray: #2a2a2a;
+        --secondary-text: #e0e0e0;
+        --secondary-light-text: #b0b0b0;
+    }
+    
+    body {
+        background-color: var(--primary-white);
+        color: var(--secondary-text);
+    }
+    */
+}
+
+/* Reduced Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Touch Friendly Sizes */
+@media (pointer: coarse) {
+    
+    .btn {
+        min-height: 48px;
+        min-width: 48px;
+    }
+    
+    .nav-link {
+        padding: var(--spacing-lg);
+    }
+    
+    input, button, textarea, select {
+        min-height: 44px;
+    }
+}

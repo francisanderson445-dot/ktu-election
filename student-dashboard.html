@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - KTU Election</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="../assets/branding/ktu-logo.svg" alt="KTU Logo" class="logo-img">
+                <span>KTU Elections</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="candidates.html" class="nav-link">Candidates</a>
+                <a href="#" class="nav-link" onclick="logout(); return false;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Welcome, <span id="studentName">Student</span>!</h1>
+                <p>KTU Level 400 Student Election 2026</p>
+            </div>
+            <div class="dashboard-user">
+                <p id="studentEmail">Loading...</p>
+                <button class="dashboard-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Student Info Cards -->
+        <div class="student-info-grid">
+            <div class="student-info-card">
+                <h3>Full Name</h3>
+                <p id="infoName">-</p>
+            </div>
+            <div class="student-info-card">
+                <h3>Index Number</h3>
+                <p id="infoIndex">-</p>
+            </div>
+            <div class="student-info-card">
+                <h3>Level</h3>
+                <p id="infoLevel">-</p>
+            </div>
+            <div class="student-info-card">
+                <h3>Programme</h3>
+                <p id="infoProgramme">-</p>
+            </div>
+            <div class="student-info-card">
+                <h3>Department</h3>
+                <p id="infoDepartment">-</p>
+            </div>
+            <div class="student-info-card">
+                <h3>Voting Status</h3>
+                <p id="votingStatusText" style="color: #F39C12;">NOT YET VOTED</p>
+            </div>
+        </div>
+
+        <!-- Voting Status Alert -->
+        <div id="votingStatusAlert" class="voting-status not-voted">
+            <h2>Ready to Vote?</h2>
+            <p>You have not yet cast your vote. Review the candidates and submit your vote before the election closes.</p>
+        </div>
+
+        <!-- Election Countdown -->
+        <div class="countdown-section">
+            <h2>Election Closes In</h2>
+            <div class="countdown" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-value" id="days">02</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="hours">14</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="minutes">32</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="seconds">18</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="dashboard-actions">
+            <a href="candidates.html" class="btn btn-primary">View Candidates</a>
+            <a href="voting.html" id="voteBtn" class="btn btn-secondary">Cast Your Vote</a>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <h3>Quick Links</h3>
+            <div class="links-grid">
+                <a href="../index.html#how-to-vote" class="quick-link">
+                    <span class="quick-link-icon">ℹ️</span>
+                    <span class="quick-link-text">How to Vote</span>
+                </a>
+                <a href="../index.html#rules" class="quick-link">
+                    <span class="quick-link-icon">📋</span>
+                    <span class="quick-link-text">Election Rules</span>
+                </a>
+                <a href="candidates.html" class="quick-link">
+                    <span class="quick-link-icon">👥</span>
+                    <span class="quick-link-text">All Candidates</span>
+                </a>
+                <a href="#" class="quick-link" onclick="showFAQ(); return false;">
+                    <span class="quick-link-icon">❓</span>
+                    <span class="quick-link-text">FAQ</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Important Notice -->
+        <div class="notice-box">
+            <h3>⚠️ Important</h3>
+            <p><strong>Your vote cannot be changed after submission.</strong> Please review all candidates carefully before submitting your vote.</p>
+            <p>If you have any issues or need assistance, contact: <strong>elections@ktu.edu.gh</strong></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Koforidua Technical University. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FAQ Modal -->
+    <div id="faqModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeFAQ()">&times;</span>
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <h4>Can I change my vote after submission?</h4>
+                    <p>No. Once you submit your vote, it cannot be changed. Please review carefully before submitting.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Who can vote in this election?</h4>
+                    <p>Only verified KTU Level 400 students can vote. You must have a valid student email and index number.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>How many times can I vote?</h4>
+                    <p>You can only vote once per election. The system prevents duplicate votes.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What if I forget my login details?</h4>
+                    <p>Use your KTU email and index number to login. If you need further assistance, contact elections@ktu.edu.gh</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Are my votes secure and confidential?</h4>
+                    <p>Yes. All votes are encrypted and stored securely. Your voting details are confidential.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/student-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nominees | KTU Election</title>
+  <style>
+    :root {
+      --navy: #102a43;
+      --blue: #1d4ed8;
+      --green: #0f766e;
+      --gold: #d97706;
+      --card: #ffffff;
+      --muted: #5f6c7b;
+      --shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7ff;
+      color: #1f2937;
+    }
+    .topbar {
+      background: rgba(15, 23, 42, 0.96);
+      color: white;
+      padding: 18px 0;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+    .topbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      padding: 4px;
+    }
+    .btn {
+      border: none; border-radius: 12px; padding: 11px 18px; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 56px; }
+    .header-block {
+      display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .header-block h1 { margin: 0; font-size: 2.2rem; }
+    .header-block p { margin: 8px 0 0; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid #e5edf7;
+      padding: 22px;
+    }
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #dbe3ef;
+      background: #e2e8f0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #dbeafe;
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+    .muted { color: var(--muted); }
+    .empty { padding: 24px; background: white; border-radius: 18px; border: 1px solid #e5edf7; }
+    .notice {
+      background: linear-gradient(180deg, #ecfeff, #eff6ff); border: 1px solid #a5f3fc; color: #0f172a; border-radius: 12px; padding: 15px 16px; margin-top: 18px; font-weight: 600;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="assets/branding/ktu-logo.svg" alt="KTU Logo" />
+        <span>KTU Portfolio Election</span>
+      </div>
+      <a class="btn primary" href="index.html">Back to Home</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="header-block">
+      <div>
+        <h1>Nominees</h1>
+        <p>Meet the nominees and their portfolios for the KTU election.</p>
+      </div>
+    </div>
+
+    <div id="nomineeCards" class="grid"></div>
+    <div id="nomineeMessage" class="notice hidden"></div>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
