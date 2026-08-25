@@ -83,6 +83,32 @@ async function get(sql, params = []) {
   return rows[0];
 }
 
+async function insertApprovedStudents(students) {
+  if (!students.length) return;
+
+  if (DATABASE_URL) {
+    const values = [];
+    const placeholders = students.map((student, index) => {
+      const offset = index * 7;
+      values.push(student.firstName, student.lastName, student.email, student.indexNumber, student.level, student.programme, student.sourceFile);
+      return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7})`;
+    }).join(', ');
+
+    await db.unsafe(
+      `INSERT INTO approved_students (firstName, lastName, email, indexNumber, level, programme, sourceFile) VALUES ${placeholders} ON CONFLICT (email) DO NOTHING`,
+      values
+    );
+    return;
+  }
+
+  for (const student of students) {
+    await run(
+      'INSERT INTO approved_students (firstName, lastName, email, indexNumber, level, programme, sourceFile) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [student.firstName, student.lastName, student.email, student.indexNumber, student.level, student.programme, student.sourceFile]
+    );
+  }
+}
+
 function normalizeText(value) {
   return String(value ?? '').trim().replace(/\s+/g, ' ');
 }
@@ -558,12 +584,7 @@ async function initializeDatabase() {
   const approvedCount = await get('SELECT COUNT(*) AS total FROM approved_students');
   if (DATABASE_URL || (approvedCount?.total || 0) === 0) {
     const fallbackStudents = loadApprovedStudentsFromTextFile();
-    for (const student of fallbackStudents) {
-      await run(
-        'INSERT INTO approved_students (firstName, lastName, email, indexNumber, level, programme, sourceFile) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [student.firstName, student.lastName, student.email, student.indexNumber, student.level, student.programme, student.sourceFile]
-      );
-    }
+    await insertApprovedStudents(fallbackStudents);
   }
 
   const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
