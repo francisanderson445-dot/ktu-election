@@ -579,14 +579,6 @@ async function initializeDatabase() {
   await ensureColumn('students', 'level', 'TEXT DEFAULT "400"');
   await ensureColumn('nominees', 'photoUrl', 'TEXT');
 
-  await syncApprovedStudentsFromClassList();
-
-  const approvedCount = await get('SELECT COUNT(*) AS total FROM approved_students');
-  if (DATABASE_URL || (approvedCount?.total || 0) === 0) {
-    const fallbackStudents = loadApprovedStudentsFromTextFile();
-    await insertApprovedStudents(fallbackStudents);
-  }
-
   const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
   await run(
     'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?) ON CONFLICT (username) DO UPDATE SET password = excluded.password, fullName = excluded.fullName',
@@ -1228,7 +1220,11 @@ app.post('/api/admin/approved-students/bulk', verifyAdmin, async (req, res) => {
 
 app.post('/api/admin/sync-class-list', verifyAdmin, async (req, res) => {
   try {
-    await syncApprovedStudentsFromClassList();
+    if (DATABASE_URL) {
+      await insertApprovedStudents(loadApprovedStudentsFromTextFile());
+    } else {
+      await syncApprovedStudentsFromClassList();
+    }
     const total = await get('SELECT COUNT(*) AS total FROM approved_students');
     res.json({
       success: true,
