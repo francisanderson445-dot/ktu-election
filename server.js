@@ -843,7 +843,7 @@ app.post('/api/admin/nominees', verifyAdmin, async (req, res) => {
   const savedPhotoUrl = /^data:image\//.test(String(photoUrl || '')) ? photoUrl : null;
 
   const result = await run(
-    'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id',
     [fullName.trim(), email.trim(), hashedPassword, resolvedPortfolio, (bio || '').trim(), (manifesto || '').trim(), resolvedProgramme, resolvedLevel, savedPhotoUrl]
   );
 
@@ -929,7 +929,7 @@ app.post('/api/nominee/register', async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const savedPhotoUrl = /^data:image\//.test(String(photoUrl || '')) ? photoUrl : null;
   const result = await run(
-    'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id',
     [fullName.trim(), email.trim(), hashedPassword, resolvedPortfolio, (bio || '').trim(), (manifesto || '').trim(), resolvedProgramme, resolvedLevel, savedPhotoUrl]
   );
 
