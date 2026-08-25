@@ -556,7 +556,7 @@ async function initializeDatabase() {
   await syncApprovedStudentsFromClassList();
 
   const approvedCount = await get('SELECT COUNT(*) AS total FROM approved_students');
-  if ((approvedCount?.total || 0) === 0) {
+  if (DATABASE_URL || (approvedCount?.total || 0) === 0) {
     const fallbackStudents = loadApprovedStudentsFromTextFile();
     for (const student of fallbackStudents) {
       await run(
