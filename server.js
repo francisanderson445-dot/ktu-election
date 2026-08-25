@@ -566,14 +566,11 @@ async function initializeDatabase() {
     }
   }
 
-  const adminCount = await get('SELECT COUNT(*) AS total FROM admin_users');
-  if ((adminCount?.total || 0) === 0) {
-    const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-    await run(
-      'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?)',
-      [ADMIN_USERNAME, hash, 'Election Administrator']
-    );
-  }
+  const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  await run(
+    'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?) ON CONFLICT (username) DO UPDATE SET password = excluded.password, fullName = excluded.fullName',
+    [ADMIN_USERNAME, hash, 'Election Administrator']
+  );
 
   const nomineeCount = await get('SELECT COUNT(*) AS total FROM nominees');
   if ((nomineeCount?.total || 0) === 0) {
