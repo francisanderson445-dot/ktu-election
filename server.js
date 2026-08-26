@@ -821,20 +821,12 @@ app.get('/api/student/me', verifyToken, async (req, res) => {
 });
 
 app.get('/api/nominees', async (req, res) => {
-  const nominees = await all('SELECT * FROM nominees ORDER BY voteCount DESC, fullName ASC');
-  const totalVotes = await get('SELECT COUNT(*) AS total FROM votes');
-  const total = totalVotes?.total || 0;
-
-  const results = nominees.map((nominee) => ({
-    ...nominee,
-    votePercentage: total === 0 ? 0 : Number(((nominee.voteCount / total) * 100).toFixed(2))
-  }));
-
-  res.json({ success: true, nominees: results, totalVotes: total });
+  const nominees = await all('SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, photoUrl FROM nominees ORDER BY portfolio ASC, fullName ASC');
+  res.json({ success: true, nominees });
 });
 
 app.get('/api/admin/nominees', verifyAdmin, async (req, res) => {
-  const nominees = await all('SELECT * FROM nominees ORDER BY fullName ASC');
+  const nominees = await all('SELECT * FROM nominees ORDER BY portfolio ASC, voteCount DESC, fullName ASC');
   res.json({ success: true, nominees });
 });
 

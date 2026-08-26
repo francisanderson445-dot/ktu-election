@@ -398,10 +398,9 @@ async function loadNomineesList() {
               ${photoHtml}
               <div>
                 <h4>${nominee.fullName}</h4>
-                <div class="muted">${nominee.portfolio || 'Portfolio'} · ${nominee.voteCount} votes</div>
+                <div class="muted">${nominee.portfolio || 'Portfolio'}</div>
               </div>
             </div>
-            <div class="badge open">${nominee.votePercentage || 0}%</div>
           </div>
           <p>${nominee.bio || 'No profile information set yet.'}</p>
           <p><strong>Manifesto:</strong> ${nominee.manifesto || 'Not available yet.'}</p>
