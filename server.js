@@ -40,7 +40,7 @@ const db = DATABASE_URL ? postgres(DATABASE_URL, {
   max: 1,
   prepare: false,
   ssl: 'require',
-  connect_timeout: 10
+  connect_timeout: 30
 }) : null;
 const sqlite = !DATABASE_URL ? new (require('sqlite3').verbose()).Database(DB_PATH) : null;
 if (DATABASE_URL) console.log('Connected to Supabase PostgreSQL');
