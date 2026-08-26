@@ -99,6 +99,10 @@ function normalizeDatabaseRow(row) {
     submittedat: 'submittedAt',
     studentid: 'studentId',
     nomineeid: 'nomineeId',
+    nomineename: 'nomineeName',
+    votechoice: 'voteChoice',
+    yesvotes: 'yesVotes',
+    novotes: 'noVotes',
     sourcefile: 'sourceFile'
   };
 
@@ -560,6 +564,9 @@ async function initializeDatabase() {
   await ensureColumn('nominees', 'programme', 'TEXT DEFAULT "BTECH"');
   await ensureColumn('nominees', 'level', 'TEXT DEFAULT "400"');
   await ensureColumn('nominees', 'photoUrl', 'TEXT');
+  await ensureColumn('nominees', 'yesVotes', 'INTEGER DEFAULT 0');
+  await ensureColumn('nominees', 'noVotes', 'INTEGER DEFAULT 0');
+  await ensureColumn('votes', 'voteChoice', 'TEXT DEFAULT "YES"');
   await ensureColumn('nominees', 'voteCount', 'INTEGER DEFAULT 0');
 
   await run(`CREATE TABLE IF NOT EXISTS votes (
@@ -571,6 +578,20 @@ async function initializeDatabase() {
     FOREIGN KEY(studentId) REFERENCES students(id),
     FOREIGN KEY(nomineeId) REFERENCES nominees(id)
   )`);
+
+  if (DATABASE_URL) {
+    await db.unsafe('ALTER TABLE votes ADD COLUMN IF NOT EXISTS voteChoice TEXT NOT NULL DEFAULT \'YES\'');
+    await db.unsafe('ALTER TABLE nominees ADD COLUMN IF NOT EXISTS yesVotes INTEGER NOT NULL DEFAULT 0');
+    await db.unsafe('ALTER TABLE nominees ADD COLUMN IF NOT EXISTS noVotes INTEGER NOT NULL DEFAULT 0');
+    await db.unsafe(`DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'votes_studentid_key') THEN
+          ALTER TABLE votes DROP CONSTRAINT votes_studentid_key;
+        END IF;
+      END
+    $$`);
+    await db.unsafe('CREATE UNIQUE INDEX IF NOT EXISTS votes_student_nominee_key ON votes (studentId, nomineeId)');
+  }
 
   await run(`CREATE TABLE IF NOT EXISTS admin_users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1046,11 +1067,11 @@ app.put('/api/nominee/profile', verifyNominee, async (req, res) => {
 });
 
 app.post('/api/vote', verifyToken, async (req, res) => {
-  const { nomineeId } = req.body;
+  const selections = Array.isArray(req.body.selections)
+    ? req.body.selections
+    : req.body.nomineeId ? [{ nomineeId: req.body.nomineeId, choice: 'YES' }] : [];
 
-  if (!nomineeId) {
-    return res.status(400).json({ success: false, message: 'Please select a nominee.' });
-  }
+  if (!selections.length) return res.status(400).json({ success: false, message: 'Please complete the ballot.' });
 
   const settingRow = await get('SELECT value FROM settings WHERE key = ?', ['votingOpen']);
   if (settingRow?.value !== '1') {
@@ -1066,22 +1087,38 @@ app.post('/api/vote', verifyToken, async (req, res) => {
     return res.status(403).json({ success: false, message: 'You have already voted.' });
   }
 
-  const nominee = await get('SELECT * FROM nominees WHERE id = ?', [nomineeId]);
-  if (!nominee) {
-    return res.status(404).json({ success: false, message: 'Selected nominee was not found.' });
+  const nominees = await all('SELECT * FROM nominees');
+  const nomineeById = new Map(nominees.map((nominee) => [Number(nominee.id), nominee]));
+  const normalizedSelections = selections.map((selection) => ({
+    nominee: nomineeById.get(Number(selection.nomineeId)),
+    choice: String(selection.choice || 'YES').toUpperCase()
+  }));
+  if (normalizedSelections.some((selection) => !selection.nominee || !['YES', 'NO'].includes(selection.choice))) {
+    return res.status(400).json({ success: false, message: 'Invalid ballot selection.' });
+  }
+  const presidentSelections = normalizedSelections.filter(({ nominee }) => nominee.portfolio === 'President');
+  if (presidentSelections.length !== 1 || normalizedSelections.filter(({ nominee }) => nominee.portfolio === 'President').length !== 1 || presidentSelections[0].choice !== 'YES') {
+    return res.status(400).json({ success: false, message: 'Select exactly one President.' });
+  }
+  const portfolioNames = [...new Set(nominees.map((nominee) => nominee.portfolio).filter(Boolean))].filter((portfolio) => portfolio !== 'President');
+  for (const portfolio of portfolioNames) {
+    const portfolioSelections = normalizedSelections.filter(({ nominee }) => nominee.portfolio === portfolio);
+    if (portfolioSelections.length !== 1) return res.status(400).json({ success: false, message: `Select Yes or No for ${portfolio}.` });
   }
 
-  await run('INSERT INTO votes (studentId, nomineeId) VALUES (?, ?)', [req.user.id, nomineeId]);
+  for (const { nominee, choice } of normalizedSelections) {
+    await run('INSERT INTO votes (studentId, nomineeId, voteChoice) VALUES (?, ?, ?)', [req.user.id, nominee.id, choice]);
+    await run(`UPDATE nominees SET ${choice === 'YES' ? 'voteCount = voteCount + 1, yesVotes = yesVotes + 1' : 'noVotes = noVotes + 1'} WHERE id = ?`, [nominee.id]);
+  }
   await run('UPDATE students SET hasVoted = 1 WHERE id = ?', [req.user.id]);
-  await run('UPDATE nominees SET voteCount = voteCount + 1 WHERE id = ?', [nomineeId]);
 
   res.json({
     success: true,
-    message: 'Vote recorded successfully.',
+    message: 'Your ballot was recorded successfully.',
     student: {
       id: currentStudent.id,
       fullName: `${currentStudent.firstName} ${currentStudent.lastName}`,
-      votedFor: nominee.fullName
+      votedFor: presidentSelections[0].nominee.fullName
     }
   });
 });
@@ -1124,7 +1161,7 @@ app.put('/api/admin/password', verifyAdmin, async (req, res) => {
 });
 
 app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
-  const totalVotes = await get('SELECT COUNT(*) AS total FROM votes');
+  const totalVotes = await get('SELECT COUNT(DISTINCT studentId) AS total FROM votes');
   const totalStudents = await get('SELECT COUNT(*) AS total FROM approved_students');
   const totalNominees = await get('SELECT COUNT(*) AS total FROM nominees');
   const votingOpen = await get('SELECT value FROM settings WHERE key = ?', ['votingOpen']);

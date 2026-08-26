@@ -382,55 +382,45 @@ async function loadNomineesList() {
     const hasVoted = studentInfo?.hasVoted || false;
     const votingDisabled = !studentToken || hasVoted || !siteVotingOpen;
 
-    nomineeCards.innerHTML = data.nominees.map((nominee) => {
-      let buttonLabel = 'Vote for ' + nominee.fullName;
-      if (!siteVotingOpen) buttonLabel = 'Voting Closed';
-      else if (hasVoted) buttonLabel = 'Already Voted';
-
+    nomineeCards.innerHTML = `<form id="studentBallotForm">${data.nominees.map((nominee) => {
       const photoHtml = nominee.photoUrl
         ? `<img src="${nominee.photoUrl}" alt="${nominee.fullName}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid #dbe3ef;margin-bottom:12px;" />`
         : `<div style="width:84px;height:84px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-weight:700;color:#475569;">${(nominee.fullName || 'N').charAt(0).toUpperCase()}</div>`;
 
       return `
         <div class="card">
-          <div class="head">
+          <div>
             <div style="display:flex;align-items:center;gap:12px;">
               ${photoHtml}
               <div>
                 <h4>${nominee.fullName}</h4>
-                <div class="muted">${nominee.portfolio || 'Portfolio'}</div>
+                <div class="muted">${nominee.portfolio || 'Portfolio'}${nominee.portfolio === 'President' ? ' - choose one candidate' : ' - approve this nominee'}</div>
               </div>
             </div>
           </div>
           <p>${nominee.bio || 'No profile information set yet.'}</p>
           <p><strong>Manifesto:</strong> ${nominee.manifesto || 'Not available yet.'}</p>
-          <button class="btn vote-btn" type="button" data-id="${nominee.id}" ${votingDisabled ? 'disabled' : ''}>${buttonLabel}</button>
+          ${nominee.portfolio === 'President'
+            ? `<label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Select this President</label>`
+            : `<div style="display:flex;gap:18px;"><label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Yes</label><label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="NO" ${votingDisabled ? 'disabled' : ''} required /> No</label></div>`}
         </div>
       `;
-    }).join('');
+    }).join('')}<button class="btn vote-btn" type="submit" ${votingDisabled ? 'disabled' : ''}>Submit Ballot</button></form>`;
 
-    nomineeCards.querySelectorAll('[data-id]').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const nomineeId = Number(button.dataset.id);
-        if (!siteVotingOpen) {
-          showMessage('studentMessage', 'Voting is currently closed. Please wait until the admin opens it again.', 'error');
-          return;
-        }
-        try {
-          const result = await apiRequest('/vote', 'POST', { nomineeId }, studentToken);
-          showMessage('studentMessage', result.message, 'success');
-          const currentStudentInfo = getStoredToken('studentInfo');
-          if (currentStudentInfo) {
-            currentStudentInfo.hasVoted = true;
-            setStoredToken('studentInfo', currentStudentInfo);
-          }
-          const status = document.getElementById('studentStatus');
-          if (status) status.textContent = 'Voted';
-          await loadNomineesList();
-        } catch (error) {
-          showMessage('studentMessage', error.message, 'error');
-        }
-      });
+    const ballotForm = document.getElementById('studentBallotForm');
+    if (ballotForm) ballotForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!siteVotingOpen) return;
+      const selections = [...ballotForm.querySelectorAll('input[type="radio"]:checked')].map((input) => ({ nomineeId: Number(input.value), choice: input.dataset.choice }));
+      try {
+        const result = await apiRequest('/vote', 'POST', { selections }, studentToken);
+        showMessage('studentMessage', result.message, 'success');
+        const currentStudentInfo = getStoredToken('studentInfo');
+        if (currentStudentInfo) { currentStudentInfo.hasVoted = true; setStoredToken('studentInfo', currentStudentInfo); }
+        const status = document.getElementById('studentStatus');
+        if (status) status.textContent = 'Voted';
+        await loadNomineesList();
+      } catch (error) { showMessage('studentMessage', error.message, 'error'); }
     });
   } catch (error) {
     console.error('Failed to load nominees', error);
@@ -820,10 +810,11 @@ async function showAdminDashboard() {
           <td>${nominee.portfolio || 'N/A'}</td>
           <td>${nominee.programme || 'N/A'}</td>
           <td>${nominee.level || 'N/A'}</td>
-          <td>${nominee.voteCount || 0}</td>
+          <td>${nominee.yesVotes ?? nominee.voteCount ?? 0}</td>
+          <td>${nominee.noVotes || 0}</td>
           <td><button class="btn danger" type="button" data-delete-nominee="${nominee.id}">Remove</button></td>
         </tr>
-      `).join('') || '<tr><td colspan="6">No nominees added yet.</td></tr>';
+      `).join('') || '<tr><td colspan="7">No nominees added yet.</td></tr>';
 
       nomineeTableBody.querySelectorAll('[data-delete-nominee]').forEach((button) => {
         button.addEventListener('click', async () => {
