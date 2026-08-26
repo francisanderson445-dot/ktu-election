@@ -22,7 +22,6 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const MAX_VOTERS = 400;
 const VALID_PORTFOLIOS = [
   'President',
-  'Vice President',
   'General Secretary',
   'Public Relations Officer',
   'Financial Officer',
@@ -633,7 +632,6 @@ async function initializeDatabase() {
     const nomineePassword = await bcrypt.hash('nominee123', 10);
     const seededPortfolioPairs = [
       ['Samuel Osei', 'President'],
-      ['Martha Mensah', 'Vice President'],
       ['Kwame Boateng', 'General Secretary'],
       ['Ama Afriyie', 'Public Relations Officer'],
       ['Kwadwo Owusu', 'Financial Officer'],
@@ -842,12 +840,12 @@ app.get('/api/student/me', verifyToken, async (req, res) => {
 });
 
 app.get('/api/nominees', async (req, res) => {
-  const nominees = await all('SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, photoUrl FROM nominees ORDER BY portfolio ASC, fullName ASC');
+  const nominees = await all("SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, photoUrl FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, fullName ASC");
   res.json({ success: true, nominees });
 });
 
 app.get('/api/admin/nominees', verifyAdmin, async (req, res) => {
-  const nominees = await all('SELECT * FROM nominees ORDER BY portfolio ASC, voteCount DESC, fullName ASC');
+  const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, voteCount DESC, fullName ASC");
   res.json({ success: true, nominees });
 });
 
@@ -1087,7 +1085,7 @@ app.post('/api/vote', verifyToken, async (req, res) => {
     return res.status(403).json({ success: false, message: 'You have already voted.' });
   }
 
-  const nominees = await all('SELECT * FROM nominees');
+  const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President'");
   const nomineeById = new Map(nominees.map((nominee) => [Number(nominee.id), nominee]));
   const normalizedSelections = selections.map((selection) => ({
     nominee: nomineeById.get(Number(selection.nomineeId)),
@@ -1100,10 +1098,9 @@ app.post('/api/vote', verifyToken, async (req, res) => {
   if (presidentSelections.length !== 1 || normalizedSelections.filter(({ nominee }) => nominee.portfolio === 'President').length !== 1 || presidentSelections[0].choice !== 'YES') {
     return res.status(400).json({ success: false, message: 'Select exactly one President.' });
   }
-  const portfolioNames = [...new Set(nominees.map((nominee) => nominee.portfolio).filter(Boolean))].filter((portfolio) => portfolio !== 'President');
-  for (const portfolio of portfolioNames) {
-    const portfolioSelections = normalizedSelections.filter(({ nominee }) => nominee.portfolio === portfolio);
-    if (portfolioSelections.length !== 1) return res.status(400).json({ success: false, message: `Select Yes or No for ${portfolio}.` });
+  for (const nominee of nominees.filter((entry) => entry.portfolio !== 'President')) {
+    const nomineeSelections = normalizedSelections.filter(({ nominee: selectedNominee }) => selectedNominee.id === nominee.id);
+    if (nomineeSelections.length !== 1) return res.status(400).json({ success: false, message: `Select Yes or No for ${nominee.fullName}.` });
   }
 
   for (const { nominee, choice } of normalizedSelections) {
@@ -1163,10 +1160,10 @@ app.put('/api/admin/password', verifyAdmin, async (req, res) => {
 app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
   const totalVotes = await get('SELECT COUNT(DISTINCT studentId) AS total FROM votes');
   const totalStudents = await get('SELECT COUNT(*) AS total FROM approved_students');
-  const totalNominees = await get('SELECT COUNT(*) AS total FROM nominees');
+  const totalNominees = await get("SELECT COUNT(*) AS total FROM nominees WHERE portfolio <> 'Vice President'");
   const votingOpen = await get('SELECT value FROM settings WHERE key = ?', ['votingOpen']);
   const maxVoters = await get('SELECT value FROM settings WHERE key = ?', ['maxVoters']);
-  const nominees = await all('SELECT * FROM nominees ORDER BY voteCount DESC');
+  const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President' ORDER BY voteCount DESC");
   const recordsByLevel = await all('SELECT level, COUNT(*) AS total FROM students GROUP BY level ORDER BY level DESC');
 
   const winner = nominees.length > 0 ? nominees[0] : null;

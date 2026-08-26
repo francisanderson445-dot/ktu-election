@@ -382,7 +382,15 @@ async function loadNomineesList() {
     const hasVoted = studentInfo?.hasVoted || false;
     const votingDisabled = !studentToken || hasVoted || !siteVotingOpen;
 
-    nomineeCards.innerHTML = `<form id="studentBallotForm">${data.nominees.map((nominee) => {
+    const portfolioOrder = ['President', 'General Secretary', 'Public Relations Officer', 'Financial Officer', 'Organizer', 'Women Commissioner'];
+    const groupedNominees = data.nominees.reduce((groups, nominee) => {
+      const portfolio = nominee.portfolio || 'Other';
+      (groups[portfolio] ||= []).push(nominee);
+      return groups;
+    }, {});
+    const orderedPortfolios = [...new Set([...portfolioOrder, ...Object.keys(groupedNominees)])].filter((portfolio) => groupedNominees[portfolio]);
+
+    nomineeCards.innerHTML = `<form id="studentBallotForm">${orderedPortfolios.map((portfolio) => `<section class="card" style="border:2px solid #dbe3ef;"><h3>${portfolio}</h3>${groupedNominees[portfolio].map((nominee) => {
       const photoHtml = nominee.photoUrl
         ? `<img src="${nominee.photoUrl}" alt="${nominee.fullName}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid #dbe3ef;margin-bottom:12px;" />`
         : `<div style="width:84px;height:84px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-weight:700;color:#475569;">${(nominee.fullName || 'N').charAt(0).toUpperCase()}</div>`;
@@ -401,11 +409,11 @@ async function loadNomineesList() {
           <p>${nominee.bio || 'No profile information set yet.'}</p>
           <p><strong>Manifesto:</strong> ${nominee.manifesto || 'Not available yet.'}</p>
           ${nominee.portfolio === 'President'
-            ? `<label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Select this President</label>`
-            : `<div style="display:flex;gap:18px;"><label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Yes</label><label><input type="radio" name="portfolio-${nominee.portfolio}" value="${nominee.id}" data-choice="NO" ${votingDisabled ? 'disabled' : ''} required /> No</label></div>`}
+            ? `<label><input type="radio" name="president" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Select this President</label>`
+            : `<div style="display:flex;gap:18px;"><label><input type="radio" name="nominee-${nominee.id}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Yes</label><label><input type="radio" name="nominee-${nominee.id}" value="${nominee.id}" data-choice="NO" ${votingDisabled ? 'disabled' : ''} required /> No</label></div>`}
         </div>
       `;
-    }).join('')}<button class="btn vote-btn" type="submit" ${votingDisabled ? 'disabled' : ''}>Submit Ballot</button></form>`;
+    }).join('')}</section>`).join('')}<button class="btn vote-btn" type="submit" ${votingDisabled ? 'disabled' : ''}>Submit Ballot</button></form>`;
 
     const ballotForm = document.getElementById('studentBallotForm');
     if (ballotForm) ballotForm.addEventListener('submit', async (event) => {
