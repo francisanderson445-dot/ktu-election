@@ -850,7 +850,7 @@ app.get('/api/nominees', async (req, res) => {
 });
 
 app.get('/api/admin/nominees', verifyAdmin, async (req, res) => {
-  const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, voteCount DESC, fullName ASC");
+  const nominees = await all("SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, voteCount, yesVotes, noVotes, createdAt FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, voteCount DESC, fullName ASC");
   res.json({ success: true, nominees });
 });
 
