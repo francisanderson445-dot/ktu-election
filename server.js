@@ -55,6 +55,9 @@ function convertSql(sql) {
   if (/^INSERT INTO approved_students/i.test(convertedSql)) {
     convertedSql += ' ON CONFLICT (email) DO NOTHING';
   }
+  if (/^INSERT INTO ballot_submissions/i.test(convertedSql) && !/ON CONFLICT/i.test(convertedSql)) {
+    convertedSql += ' ON CONFLICT (studentId) DO NOTHING';
+  }
 
   return convertedSql;
 }
@@ -604,6 +607,13 @@ async function initializeDatabase() {
     await db.unsafe('CREATE UNIQUE INDEX IF NOT EXISTS votes_student_nominee_key ON votes (studentId, nomineeId)');
   }
 
+  await run(`CREATE TABLE IF NOT EXISTS ballot_submissions (
+    studentId INTEGER PRIMARY KEY,
+    submittedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(studentId) REFERENCES students(id)
+  )`);
+  await run('INSERT OR IGNORE INTO ballot_submissions (studentId) SELECT DISTINCT studentId FROM votes');
+
   await run(`CREATE TABLE IF NOT EXISTS admin_users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -1098,6 +1108,11 @@ app.post('/api/vote', verifyToken, async (req, res) => {
     return res.status(403).json({ success: false, message: 'You have already voted.' });
   }
 
+  const ballotClaim = await run('INSERT INTO ballot_submissions (studentId) VALUES (?) ON CONFLICT(studentId) DO NOTHING', [req.user.id]);
+  if (Number(ballotClaim.changes || 0) !== 1) {
+    return res.status(403).json({ success: false, message: 'You have already submitted a ballot. Ask the admin to clear your vote records before voting again.' });
+  }
+
   const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President'");
   const nomineeById = new Map(nominees.map((nominee) => [Number(nominee.id), nominee]));
   const normalizedSelections = selections.map((selection) => ({
@@ -1345,6 +1360,7 @@ app.delete('/api/admin/votes/:voteId', verifyAdmin, async (req, res) => {
 
   const remainingVotes = await get('SELECT COUNT(*) AS total FROM votes WHERE studentId = ?', [vote.studentId]);
   if (Number(remainingVotes?.total || 0) === 0) {
+    await run('DELETE FROM ballot_submissions WHERE studentId = ?', [vote.studentId]);
     await run('UPDATE students SET hasVoted = 0 WHERE id = ?', [vote.studentId]);
   }
 

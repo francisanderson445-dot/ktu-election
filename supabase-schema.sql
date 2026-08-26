@@ -44,6 +44,15 @@ alter table nominees add column if not exists yesVotes integer not null default 
 alter table nominees add column if not exists noVotes integer not null default 0;
 create unique index if not exists votes_student_nominee_key on votes(studentId, nomineeId);
 
+create table if not exists ballot_submissions (
+  studentId bigint primary key references students(id),
+  submittedAt timestamptz default now()
+);
+
+insert into ballot_submissions (studentId)
+select distinct studentId from votes
+on conflict (studentId) do nothing;
+
 create table if not exists admin_users (
   id bigserial primary key,
   username text unique not null,
