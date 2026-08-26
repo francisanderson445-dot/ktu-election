@@ -36,7 +36,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.use(express.static(__dirname));
 
-const db = DATABASE_URL ? postgres(DATABASE_URL, { max: 1, prepare: false }) : null;
+const db = DATABASE_URL ? postgres(DATABASE_URL, {
+  max: 1,
+  prepare: false,
+  ssl: 'require',
+  connect_timeout: 10
+}) : null;
 const sqlite = !DATABASE_URL ? new (require('sqlite3').verbose()).Database(DB_PATH) : null;
 if (DATABASE_URL) console.log('Connected to Supabase PostgreSQL');
 
