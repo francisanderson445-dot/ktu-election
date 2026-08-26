@@ -863,12 +863,15 @@ app.post('/api/admin/nominees', verifyAdmin, async (req, res) => {
   const hashedPassword = await bcrypt.hash(cleanPassword, 10);
   const savedPhotoUrl = /^data:image\//.test(String(photoUrl || '')) ? photoUrl : null;
 
-  const result = await run(
+  await run(
     'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id',
     [fullName.trim(), email.trim(), hashedPassword, resolvedPortfolio, (bio || '').trim(), (manifesto || '').trim(), resolvedProgramme, resolvedLevel, savedPhotoUrl]
   );
 
-  const nominee = await get('SELECT * FROM nominees WHERE id = ?', [result.id]);
+  const nominee = await get('SELECT * FROM nominees WHERE LOWER(email) = LOWER(?)', [email.trim()]);
+  if (!nominee) {
+    return res.status(500).json({ success: false, message: 'Nominee was not saved. Please try again.' });
+  }
   res.json({ success: true, nominee, message: 'Nominee added successfully.' });
 });
 
@@ -949,12 +952,15 @@ app.post('/api/nominee/register', async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const savedPhotoUrl = /^data:image\//.test(String(photoUrl || '')) ? photoUrl : null;
-  const result = await run(
+  await run(
     'INSERT INTO nominees (fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id',
     [fullName.trim(), email.trim(), hashedPassword, resolvedPortfolio, (bio || '').trim(), (manifesto || '').trim(), resolvedProgramme, resolvedLevel, savedPhotoUrl]
   );
 
-  const nominee = await get('SELECT * FROM nominees WHERE id = ?', [result.id]);
+  const nominee = await get('SELECT * FROM nominees WHERE LOWER(email) = LOWER(?)', [email.trim()]);
+  if (!nominee) {
+    return res.status(500).json({ success: false, message: 'Nominee was not saved. Please try again.' });
+  }
   const token = signToken({ id: nominee.id, email: nominee.email, role: 'nominee' });
 
   res.json({
