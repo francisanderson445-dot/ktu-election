@@ -88,6 +88,7 @@ function normalizeDatabaseRow(row) {
   if (!DATABASE_URL || !row) return row;
 
   const fieldNames = {
+    fullname: 'fullName',
     firstname: 'firstName',
     lastname: 'lastName',
     indexnumber: 'indexNumber',
