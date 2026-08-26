@@ -603,7 +603,7 @@ async function initializeDatabase() {
 
   const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
   await run(
-    'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?) ON CONFLICT (username) DO UPDATE SET password = excluded.password, fullName = excluded.fullName',
+    'INSERT INTO admin_users (username, password, fullName) VALUES (?, ?, ?) ON CONFLICT (username) DO NOTHING',
     [ADMIN_USERNAME, hash, 'Election Administrator']
   );
 
