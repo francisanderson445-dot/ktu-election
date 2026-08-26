@@ -37,12 +37,11 @@ create table if not exists votes (
   nomineeId bigint not null references nominees(id),
   voteChoice text not null default 'YES',
   submittedAt timestamptz default now(),
-  unique(studentId)
+  unique(studentId, nomineeId)
 );
 
 alter table nominees add column if not exists yesVotes integer not null default 0;
 alter table nominees add column if not exists noVotes integer not null default 0;
-alter table votes drop constraint if exists votes_studentid_key;
 create unique index if not exists votes_student_nominee_key on votes(studentId, nomineeId);
 
 create table if not exists admin_users (

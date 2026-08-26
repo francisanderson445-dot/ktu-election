@@ -1104,6 +1104,10 @@ app.post('/api/vote', verifyToken, async (req, res) => {
     nominee: nomineeById.get(Number(selection.nomineeId)),
     choice: String(selection.choice || 'YES').toUpperCase()
   }));
+  const selectedIds = normalizedSelections.map(({ nominee }) => nominee?.id).filter(Boolean);
+  if (new Set(selectedIds).size !== selectedIds.length) {
+    return res.status(400).json({ success: false, message: 'You cannot select the same nominee twice.' });
+  }
   if (normalizedSelections.some((selection) => !selection.nominee || !['YES', 'NO'].includes(selection.choice))) {
     return res.status(400).json({ success: false, message: 'Invalid ballot selection.' });
   }
@@ -1327,14 +1331,22 @@ app.delete('/api/admin/votes/:voteId', verifyAdmin, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid vote id.' });
   }
 
-  const vote = await get('SELECT studentId, nomineeId FROM votes WHERE id = ?', [voteId]);
+  const vote = await get('SELECT studentId, nomineeId, voteChoice FROM votes WHERE id = ?', [voteId]);
   if (!vote) {
     return res.status(404).json({ success: false, message: 'Vote record not found.' });
   }
 
   await run('DELETE FROM votes WHERE id = ?', [voteId]);
-  await run('UPDATE students SET hasVoted = 0 WHERE id = ?', [vote.studentId]);
-  await run('UPDATE nominees SET voteCount = MAX(voteCount - 1, 0) WHERE id = ?', [vote.nomineeId]);
+  if (String(vote.voteChoice || 'YES').toUpperCase() === 'YES') {
+    await run('UPDATE nominees SET voteCount = MAX(voteCount - 1, 0), yesVotes = MAX(yesVotes - 1, 0) WHERE id = ?', [vote.nomineeId]);
+  } else {
+    await run('UPDATE nominees SET noVotes = MAX(noVotes - 1, 0) WHERE id = ?', [vote.nomineeId]);
+  }
+
+  const remainingVotes = await get('SELECT COUNT(*) AS total FROM votes WHERE studentId = ?', [vote.studentId]);
+  if (Number(remainingVotes?.total || 0) === 0) {
+    await run('UPDATE students SET hasVoted = 0 WHERE id = ?', [vote.studentId]);
+  }
 
   res.json({ success: true, message: 'Vote deleted successfully.' });
 });
