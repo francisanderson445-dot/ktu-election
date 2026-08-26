@@ -75,12 +75,33 @@ async function all(sql, params = []) {
     return new Promise((resolve, reject) => sqlite.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows)));
   }
   if (/^PRAGMA /i.test(sql)) return [];
-  return db.unsafe(convertSql(sql), params);
+  const rows = await db.unsafe(convertSql(sql), params);
+  return rows.map(normalizeDatabaseRow);
 }
 
 async function get(sql, params = []) {
   const rows = await all(sql, params);
   return rows[0];
+}
+
+function normalizeDatabaseRow(row) {
+  if (!DATABASE_URL || !row) return row;
+
+  const fieldNames = {
+    firstname: 'firstName',
+    lastname: 'lastName',
+    indexnumber: 'indexNumber',
+    hasvoted: 'hasVoted',
+    createdat: 'createdAt',
+    photourl: 'photoUrl',
+    votecount: 'voteCount',
+    submittedat: 'submittedAt',
+    studentid: 'studentId',
+    nomineeid: 'nomineeId',
+    sourcefile: 'sourceFile'
+  };
+
+  return Object.fromEntries(Object.entries(row).map(([key, value]) => [fieldNames[key] || key, value]));
 }
 
 async function insertApprovedStudents(students) {
