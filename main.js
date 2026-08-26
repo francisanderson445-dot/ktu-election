@@ -60,6 +60,27 @@ function setStoredToken(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function resizeNomineePhoto(file, maxSize = 500) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.78));
+      };
+      image.onerror = reject;
+      image.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function getMockState() {
   const saved = localStorage.getItem('mockVotingState');
   if (saved) {
@@ -555,9 +576,8 @@ async function handleNomineeRegister(event) {
       showMessage('nomineeMessage', 'Photo must be smaller than 2MB.', 'error');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      payload.photoUrl = reader.result;
+    resizeNomineePhoto(file).then(async (photoUrl) => {
+      payload.photoUrl = photoUrl;
       try {
         const result = await apiRequest('/nominee/register', 'POST', payload);
         setStoredToken('nomineeToken', result.token);
@@ -567,8 +587,7 @@ async function handleNomineeRegister(event) {
       } catch (error) {
         showMessage('nomineeMessage', error.message, 'error');
       }
-    };
-    reader.readAsDataURL(file);
+    }).catch(() => showMessage('nomineeMessage', 'Unable to process the selected photo.', 'error'));
     return;
   }
 
@@ -668,9 +687,8 @@ async function handleNomineeProfileForm(event) {
       showMessage('nomineeMessage', 'Photo must be less than 2MB.', 'error');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      payload.photoUrl = reader.result;
+    resizeNomineePhoto(file).then(async (photoUrl) => {
+      payload.photoUrl = photoUrl;
       try {
         const result = await apiRequest('/nominee/profile', 'PUT', payload, token);
         showMessage('nomineeMessage', result.message, 'success');
@@ -678,8 +696,7 @@ async function handleNomineeProfileForm(event) {
       } catch (error) {
         showMessage('nomineeMessage', error.message, 'error');
       }
-    };
-    reader.readAsDataURL(file);
+    }).catch(() => showMessage('nomineeMessage', 'Unable to process the selected photo.', 'error'));
     return;
   }
 
@@ -883,9 +900,8 @@ async function handleAdminAddNominee(event) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      payload.photoUrl = reader.result;
+    resizeNomineePhoto(file).then(async (photoUrl) => {
+      payload.photoUrl = photoUrl;
       try {
         const result = await apiRequest('/admin/nominees', 'POST', payload, token);
         showMessage('adminMessage', result.message, 'success');
@@ -895,8 +911,7 @@ async function handleAdminAddNominee(event) {
       } catch (error) {
         showMessage('adminMessage', error.message, 'error');
       }
-    };
-    reader.readAsDataURL(file);
+    }).catch(() => showMessage('adminMessage', 'Unable to process the selected photo.', 'error'));
     return;
   }
 

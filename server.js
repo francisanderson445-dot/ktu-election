@@ -113,6 +113,13 @@ function normalizeDatabaseRow(row) {
   return Object.fromEntries(Object.entries(row).map(([key, value]) => [fieldNames[key] || key, value]));
 }
 
+function limitPublicPhotoSize(nominee) {
+  if (nominee.photoUrl && nominee.photoUrl.length > 700000) {
+    return { ...nominee, photoUrl: null };
+  }
+  return nominee;
+}
+
 async function insertApprovedStudents(students) {
   if (!students.length) return;
 
@@ -846,7 +853,8 @@ app.get('/api/student/me', verifyToken, async (req, res) => {
 
 app.get('/api/nominees', async (req, res) => {
   const nominees = await all("SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, photoUrl FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, fullName ASC");
-  res.json({ success: true, nominees });
+  const publicNominees = nominees.map(limitPublicPhotoSize);
+  res.json({ success: true, nominees: publicNominees });
 });
 
 app.get('/api/admin/nominees', verifyAdmin, async (req, res) => {
