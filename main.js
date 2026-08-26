@@ -1006,6 +1006,19 @@ async function exportRecords() {
   }
 }
 
+async function clearAllVotes() {
+  const token = getStoredToken('adminToken');
+  if (!token || !window.confirm('Clear all vote records and reset all nominee totals?')) return;
+
+  try {
+    const result = await apiRequest('/admin/votes', 'DELETE', null, token);
+    showMessage('adminMessage', result.message, 'success');
+    await showAdminDashboard();
+  } catch (error) {
+    showMessage('adminMessage', error.message, 'error');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const studentLoginForm = document.getElementById('studentLoginForm');
   if (studentLoginForm) studentLoginForm.addEventListener('submit', handleStudentLogin);
@@ -1036,6 +1049,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const exportVotesBtn = document.getElementById('exportVotesBtn');
   if (exportVotesBtn) exportVotesBtn.addEventListener('click', exportRecords);
+
+  const clearAllVotesBtn = document.getElementById('clearAllVotesBtn');
+  if (clearAllVotesBtn) clearAllVotesBtn.addEventListener('click', clearAllVotes);
 
   const syncClassListBtn = document.getElementById('syncClassListBtn');
   if (syncClassListBtn) syncClassListBtn.addEventListener('click', syncClassList);

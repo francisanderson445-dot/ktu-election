@@ -1367,6 +1367,19 @@ app.delete('/api/admin/votes/:voteId', verifyAdmin, async (req, res) => {
   res.json({ success: true, message: 'Vote deleted successfully.' });
 });
 
+app.delete('/api/admin/votes', verifyAdmin, async (req, res) => {
+  try {
+    await run('DELETE FROM votes');
+    await run('DELETE FROM ballot_submissions');
+    await run('UPDATE students SET hasVoted = 0');
+    await run('UPDATE nominees SET voteCount = 0, yesVotes = 0, noVotes = 0');
+    res.json({ success: true, message: 'All vote records and nominee totals were cleared successfully.' });
+  } catch (error) {
+    console.error('Clear all votes failed:', error);
+    res.status(500).json({ success: false, message: 'Unable to clear all vote records.' });
+  }
+});
+
 app.get('/api/admin/export', verifyAdmin, async (req, res) => {
   const rows = await all(`
     SELECT s.firstName, s.lastName, s.email, s.indexNumber, s.level, s.programme, n.fullName AS votedFor, v.submittedAt
