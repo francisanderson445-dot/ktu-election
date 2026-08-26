@@ -1115,6 +1115,22 @@ app.post('/api/admin/login', async (req, res) => {
   res.json({ success: true, token, admin: { id: admin.id, username: admin.username, fullName: admin.fullName } });
 });
 
+app.put('/api/admin/password', verifyAdmin, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword || String(newPassword).length < 8) {
+    return res.status(400).json({ success: false, message: 'Current password and a new password of at least 8 characters are required.' });
+  }
+
+  const admin = await get('SELECT * FROM admin_users WHERE id = ?', [req.admin.id]);
+  if (!admin || !(await bcrypt.compare(currentPassword, admin.password))) {
+    return res.status(401).json({ success: false, message: 'Current password is incorrect.' });
+  }
+
+  const hash = await bcrypt.hash(String(newPassword), 10);
+  await run('UPDATE admin_users SET password = ? WHERE id = ?', [hash, req.admin.id]);
+  res.json({ success: true, message: 'Admin password changed successfully.' });
+});
+
 app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
   const totalVotes = await get('SELECT COUNT(*) AS total FROM votes');
   const totalStudents = await get('SELECT COUNT(*) AS total FROM approved_students');

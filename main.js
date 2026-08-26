@@ -710,6 +710,27 @@ async function handleAdminLogin(event) {
   }
 }
 
+async function handleAdminPasswordChange(event) {
+  event.preventDefault();
+  const token = getStoredToken('adminToken');
+  if (!token) return;
+
+  const currentPassword = document.getElementById('currentAdminPassword').value;
+  const newPassword = document.getElementById('newAdminPassword').value;
+  if (!currentPassword || newPassword.length < 8) {
+    showMessage('adminMessage', 'Enter your current password and a new password of at least 8 characters.', 'error');
+    return;
+  }
+
+  try {
+    const result = await apiRequest('/admin/password', 'PUT', { currentPassword, newPassword }, token);
+    showMessage('adminMessage', result.message, 'success');
+    document.getElementById('adminPasswordForm').reset();
+  } catch (error) {
+    showMessage('adminMessage', error.message, 'error');
+  }
+}
+
 async function showAdminDashboard() {
   const token = getStoredToken('adminToken');
   if (!token) return;
@@ -994,6 +1015,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const adminNomineeForm = document.getElementById('adminNomineeForm');
   if (adminNomineeForm) adminNomineeForm.addEventListener('submit', handleAdminAddNominee);
 
+  const adminPasswordForm = document.getElementById('adminPasswordForm');
+  if (adminPasswordForm) adminPasswordForm.addEventListener('submit', handleAdminPasswordChange);
+
   const bulkApprovedStudentsForm = document.getElementById('bulkApprovedStudentsForm');
   if (bulkApprovedStudentsForm) bulkApprovedStudentsForm.addEventListener('submit', handleBulkApprovedStudents);
 
@@ -1017,11 +1041,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const nomineeToken = getStoredToken('nomineeToken');
   if (nomineeToken) {
     showNomineeDashboard();
-  }
-
-  const adminToken = getStoredToken('adminToken');
-  if (adminToken) {
-    showAdminDashboard();
   }
 
   await loadSiteStatus();

@@ -150,6 +150,15 @@
   <section id="adminDashboard" class="dashboard">
     <div class="dashboard-shell">
       <div class="dashboard-body">
+        <div class="panel" style="margin-bottom:20px;">
+          <h3>Change Admin Password</h3>
+          <form id="adminPasswordForm" class="form-grid">
+            <input id="currentAdminPassword" type="password" placeholder="Current password" required />
+            <input id="newAdminPassword" type="password" placeholder="New password (8+ characters)" minlength="8" required />
+            <button class="btn secondary" type="submit">Change Password</button>
+          </form>
+        </div>
+
         <div class="stats-grid">
           <div class="stat-box"><h4>Total Students</h4><strong id="adminTotalStudents">0</strong></div>
           <div class="stat-box"><h4>Votes Cast</h4><strong id="adminVotesCast">0</strong></div>
