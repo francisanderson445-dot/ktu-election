@@ -56,7 +56,6 @@ function displayStudentInfo(student) {
     // Update info cards
     updateInfoCard('infoName', student.firstName + ' ' + student.lastName || 'N/A');
     updateInfoCard('infoIndex', student.indexNumber || 'N/A');
-    updateInfoCard('infoLevel', 'Level ' + student.level || 'N/A');
     updateInfoCard('infoProgramme', student.programme || 'N/A');
     updateInfoCard('infoDepartment', student.department || 'N/A');
 }
