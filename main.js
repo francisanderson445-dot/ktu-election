@@ -858,9 +858,27 @@ async function showAdminDashboard() {
           <td>${nominee.level || 'N/A'}</td>
           <td>${nominee.yesVotes ?? nominee.voteCount ?? 0}</td>
           <td>${nominee.noVotes || 0}</td>
-          <td><button class="btn danger" type="button" data-delete-nominee="${nominee.id}">Remove</button></td>
+          <td><button class="btn secondary" type="button" data-edit-nominee="${nominee.id}">Edit</button> <button class="btn danger" type="button" data-delete-nominee="${nominee.id}">Remove</button></td>
         </tr>
       `).join('') || '<tr><td colspan="7">No nominees added yet.</td></tr>';
+
+      nomineeTableBody.querySelectorAll('[data-edit-nominee]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const nominee = (nomineesData.nominees || []).find((entry) => Number(entry.id) === Number(button.dataset.editNominee));
+          if (!nominee) return;
+          const form = document.getElementById('adminNomineeForm');
+          form.dataset.editId = nominee.id;
+          document.getElementById('adminNomineeName').value = nominee.fullName || '';
+          document.getElementById('adminNomineeEmail').value = nominee.email || '';
+          document.getElementById('adminNomineePortfolio').value = nominee.portfolio || '';
+          document.getElementById('adminNomineeBio').value = nominee.bio || '';
+          document.getElementById('adminNomineeProgramme').value = nominee.programme || 'BTECH';
+          document.getElementById('adminNomineeLevel').value = nominee.level || '400';
+          document.getElementById('adminNomineeSubmitBtn').textContent = 'Save Changes';
+          document.getElementById('cancelNomineeEditBtn').classList.remove('hidden');
+          form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
 
       nomineeTableBody.querySelectorAll('[data-delete-nominee]').forEach((button) => {
         button.addEventListener('click', async () => {
@@ -886,6 +904,9 @@ async function handleAdminAddNominee(event) {
   event.preventDefault();
   const token = getStoredToken('adminToken');
   if (!token) return;
+
+  const form = document.getElementById('adminNomineeForm');
+  const editId = form?.dataset.editId;
 
   const fullName = document.getElementById('adminNomineeName').value.trim();
   const email = document.getElementById('adminNomineeEmail').value.trim();
@@ -922,10 +943,10 @@ async function handleAdminAddNominee(event) {
     resizeNomineePhoto(file).then(async (photoUrl) => {
       payload.photoUrl = photoUrl;
       try {
-        const result = await apiRequest('/admin/nominees', 'POST', payload, token);
+        const result = await apiRequest(editId ? `/admin/nominees/${editId}` : '/admin/nominees', editId ? 'PUT' : 'POST', payload, token);
         showMessage('adminMessage', result.message, 'success');
-        const form = document.getElementById('adminNomineeForm');
         if (form) form.reset();
+        resetNomineeEditMode();
         await showAdminDashboard();
       } catch (error) {
         showMessage('adminMessage', error.message, 'error');
@@ -935,14 +956,23 @@ async function handleAdminAddNominee(event) {
   }
 
   try {
-    const result = await apiRequest('/admin/nominees', 'POST', payload, token);
+    const result = await apiRequest(editId ? `/admin/nominees/${editId}` : '/admin/nominees', editId ? 'PUT' : 'POST', payload, token);
     showMessage('adminMessage', result.message, 'success');
-    const form = document.getElementById('adminNomineeForm');
     if (form) form.reset();
+    resetNomineeEditMode();
     await showAdminDashboard();
   } catch (error) {
     showMessage('adminMessage', error.message, 'error');
   }
+}
+
+function resetNomineeEditMode() {
+  const form = document.getElementById('adminNomineeForm');
+  const submitButton = document.getElementById('adminNomineeSubmitBtn');
+  const cancelButton = document.getElementById('cancelNomineeEditBtn');
+  if (form) delete form.dataset.editId;
+  if (submitButton) submitButton.textContent = 'Add Nominee';
+  if (cancelButton) cancelButton.classList.add('hidden');
 }
 
 async function handleBulkApprovedStudents(event) {
@@ -1059,6 +1089,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const adminNomineeForm = document.getElementById('adminNomineeForm');
   if (adminNomineeForm) adminNomineeForm.addEventListener('submit', handleAdminAddNominee);
+
+  const cancelNomineeEditBtn = document.getElementById('cancelNomineeEditBtn');
+  if (cancelNomineeEditBtn) cancelNomineeEditBtn.addEventListener('click', () => {
+    document.getElementById('adminNomineeForm').reset();
+    resetNomineeEditMode();
+  });
 
   const adminPasswordForm = document.getElementById('adminPasswordForm');
   if (adminPasswordForm) adminPasswordForm.addEventListener('submit', handleAdminPasswordChange);
