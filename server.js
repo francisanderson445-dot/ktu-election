@@ -1211,6 +1211,19 @@ app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
   const recordsByLevel = await all('SELECT level, COUNT(*) AS total FROM students GROUP BY level ORDER BY level DESC');
   const portfolioResults = Object.values(nominees.reduce((groups, nominee) => {
     const portfolio = nominee.portfolio || 'Unassigned';
+    if (portfolio === 'President') {
+      const yesVotes = Number(nominee.yesVotes ?? nominee.voteCount ?? 0);
+      const noVotes = Number(nominee.noVotes || 0);
+      groups[`President-${nominee.id}`] = {
+        portfolio: `President - ${nominee.fullName}`,
+        yesVotes,
+        noVotes,
+        percentage: yesVotes + noVotes > 0
+          ? Number(((yesVotes / (yesVotes + noVotes)) * 100).toFixed(2))
+          : 0
+      };
+      return groups;
+    }
     const group = groups[portfolio] || { portfolio, yesVotes: 0, noVotes: 0 };
     group.yesVotes += Number(nominee.yesVotes ?? nominee.voteCount ?? 0);
     group.noVotes += Number(nominee.noVotes || 0);
@@ -1218,9 +1231,9 @@ app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
     return groups;
   }, {})).map((result) => ({
     ...result,
-    percentage: result.yesVotes + result.noVotes > 0
+    percentage: result.percentage ?? (result.yesVotes + result.noVotes > 0
       ? Number(((result.yesVotes / (result.yesVotes + result.noVotes)) * 100).toFixed(2))
-      : 0
+      : 0)
   }));
 
   const winner = nominees.length > 0 ? nominees[0] : null;
