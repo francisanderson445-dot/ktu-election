@@ -112,9 +112,15 @@
     .panel h3 { margin-top: 0; }
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; }
+    .portfolio-chart { display: grid; gap: 16px; }
+    .portfolio-chart-row { display: grid; gap: 7px; }
+    .portfolio-chart-label { display: flex; justify-content: space-between; gap: 14px; color: #334155; }
+    .portfolio-chart-label span { color: var(--muted); font-size: 0.9rem; text-align: right; }
+    .portfolio-chart-track { height: 16px; overflow: hidden; border-radius: 8px; background: #e2e8f0; }
+    .portfolio-chart-bar { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #0f766e, #10b981); transition: width 0.45s ease; }
     .hidden { display: none !important; }
     @keyframes panelIn { from { opacity: 0; transform: translateY(18px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @media (max-width: 760px) { .auth-shell { grid-template-columns: 1fr; } .auth-brand { min-height: 220px; } .stats-grid, .two-col { grid-template-columns: 1fr; } }
+    @media (max-width: 760px) { .auth-shell { grid-template-columns: 1fr; } .auth-brand { min-height: 220px; } .stats-grid, .two-col { grid-template-columns: 1fr; } .portfolio-chart-label { flex-direction: column; gap: 3px; } .portfolio-chart-label span { text-align: left; } }
   </style>
 </head>
 <body>
@@ -208,6 +214,11 @@
               <button class="btn primary" type="submit">Add Nominee</button>
             </form>
           </div>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <h3>Live Vote Percentage by Portfolio</h3>
+          <div id="portfolioChart" class="portfolio-chart"></div>
         </div>
 
         <div class="panel" style="margin-top:20px;">

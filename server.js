@@ -1209,6 +1209,19 @@ app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
   const maxVoters = await get('SELECT value FROM settings WHERE key = ?', ['maxVoters']);
   const nominees = await all("SELECT * FROM nominees WHERE portfolio <> 'Vice President' ORDER BY voteCount DESC");
   const recordsByLevel = await all('SELECT level, COUNT(*) AS total FROM students GROUP BY level ORDER BY level DESC');
+  const portfolioResults = Object.values(nominees.reduce((groups, nominee) => {
+    const portfolio = nominee.portfolio || 'Unassigned';
+    const group = groups[portfolio] || { portfolio, yesVotes: 0, noVotes: 0 };
+    group.yesVotes += Number(nominee.yesVotes ?? nominee.voteCount ?? 0);
+    group.noVotes += Number(nominee.noVotes || 0);
+    groups[portfolio] = group;
+    return groups;
+  }, {})).map((result) => ({
+    ...result,
+    percentage: result.yesVotes + result.noVotes > 0
+      ? Number(((result.yesVotes / (result.yesVotes + result.noVotes)) * 100).toFixed(2))
+      : 0
+  }));
 
   const winner = nominees.length > 0 ? nominees[0] : null;
   const turnout = totalStudents?.total ? ((totalVotes?.total || 0) / Number(totalStudents.total)) * 100 : 0;
@@ -1223,7 +1236,8 @@ app.get('/api/admin/dashboard', verifyAdmin, async (req, res) => {
       votingOpen: votingOpen?.value === '1',
       maxVoters: Number(maxVoters?.value || MAX_VOTERS),
       winner,
-      recordsByLevel
+      recordsByLevel,
+      portfolioResults
     }
   });
 });

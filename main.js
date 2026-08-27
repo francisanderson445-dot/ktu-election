@@ -791,6 +791,16 @@ async function showAdminDashboard() {
     const winnerDisplay = document.getElementById('winnerDisplay');
     if (winnerDisplay) winnerDisplay.textContent = stats.winner ? `${stats.winner.fullName} leads with ${stats.winner.voteCount} votes` : 'No winner declared yet.';
 
+    const portfolioChart = document.getElementById('portfolioChart');
+    if (portfolioChart) {
+      portfolioChart.innerHTML = (stats.portfolioResults || []).map((result) => `
+        <div class="portfolio-chart-row">
+          <div class="portfolio-chart-label"><strong>${result.portfolio}</strong><span>${result.percentage}% Yes (${result.yesVotes} Yes / ${result.noVotes} No)</span></div>
+          <div class="portfolio-chart-track"><div class="portfolio-chart-bar" style="width:${Math.min(100, Math.max(0, result.percentage))}%"></div></div>
+        </div>
+      `).join('') || '<p class="muted">No votes recorded yet.</p>';
+    }
+
     const openBtn = document.getElementById('openVotingBtn');
     const closeBtn = document.getElementById('closeVotingBtn');
     if (openBtn) openBtn.disabled = stats.votingOpen;
