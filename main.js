@@ -95,8 +95,8 @@ function getMockState() {
     votingOpen: true,
     maxVoters: 400,
     nominees: [
-      { id: 1, fullName: 'Samuel Osei', portfolio: 'Portfolio Secretary', bio: 'Aspiring student leader focused on transparency and student welfare.', manifesto: 'I will improve communication, empower student groups and support all class activities.', voteCount: 12, votePercentage: 30, programme: 'BTECH', level: '400', photoUrl: '' },
-      { id: 2, fullName: 'Martha Mensah', portfolio: 'Academic Representative', bio: 'Committed to academic advocacy and student support networks.', manifesto: 'I will work closely with students to drive academic excellence and active participation.', voteCount: 8, votePercentage: 20, programme: 'BTECH', level: '400', photoUrl: '' }
+      { id: 1, fullName: 'Samuel Osei', portfolio: 'Portfolio Secretary', bio: 'Aspiring student leader focused on transparency and student welfare.', voteCount: 12, votePercentage: 30, programme: 'BTECH', level: '400', photoUrl: '' },
+      { id: 2, fullName: 'Martha Mensah', portfolio: 'Academic Representative', bio: 'Committed to academic advocacy and student support networks.', voteCount: 8, votePercentage: 20, programme: 'BTECH', level: '400', photoUrl: '' }
     ],
     students: [],
     approvedStudents: [
@@ -428,7 +428,6 @@ async function loadNomineesList() {
             </div>
           </div>
           <p>${nominee.bio || 'No profile information set yet.'}</p>
-          <p><strong>Manifesto:</strong> ${nominee.manifesto || 'Not available yet.'}</p>
           ${nominee.portfolio === 'President'
             ? `<label><input type="radio" name="president" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Select this President</label>`
             : `<div style="display:flex;gap:18px;"><label><input type="radio" name="nominee-${nominee.id}" value="${nominee.id}" data-choice="YES" ${votingDisabled ? 'disabled' : ''} required /> Yes</label><label><input type="radio" name="nominee-${nominee.id}" value="${nominee.id}" data-choice="NO" ${votingDisabled ? 'disabled' : ''} required /> No</label></div>`}
@@ -558,7 +557,6 @@ async function handleNomineeRegister(event) {
   const password = document.getElementById('registerNomineePassword').value.trim();
   const portfolio = document.getElementById('registerNomineePortfolio').value.trim();
   const bio = document.getElementById('registerNomineeBio').value.trim();
-  const manifesto = document.getElementById('registerNomineeManifesto').value.trim();
   const programme = document.getElementById('registerNomineeProgramme').value.trim();
   const level = document.getElementById('registerNomineeLevel').value.trim();
   const photoInput = document.getElementById('registerNomineePhoto');
@@ -568,7 +566,7 @@ async function handleNomineeRegister(event) {
     return;
   }
 
-  const payload = { fullName, email, password, portfolio, bio, manifesto, programme, level, photoUrl: null };
+  const payload = { fullName, email, password, portfolio, bio, programme, level, photoUrl: null };
 
   if (photoInput && photoInput.files && photoInput.files[0]) {
     const file = photoInput.files[0];
@@ -638,7 +636,6 @@ async function showNomineeDashboard() {
     document.getElementById('profileName').value = nominee.fullName || '';
     document.getElementById('profilePortfolio').value = nominee.portfolio || '';
     document.getElementById('profileBio').value = nominee.bio || '';
-    document.getElementById('profileManifesto').value = nominee.manifesto || '';
     document.getElementById('profileProgramme').value = nominee.programme || 'BTECH';
     document.getElementById('profileLevel').value = nominee.level || '400';
     const profilePhoto = document.getElementById('profilePhotoPreview');
@@ -675,7 +672,6 @@ async function handleNomineeProfileForm(event) {
     fullName: document.getElementById('profileName').value.trim(),
     portfolio: document.getElementById('profilePortfolio').value.trim(),
     bio: document.getElementById('profileBio').value.trim(),
-    manifesto: document.getElementById('profileManifesto').value.trim(),
     programme: document.getElementById('profileProgramme').value.trim(),
     level: document.getElementById('profileLevel').value.trim(),
     photoUrl: null
@@ -871,7 +867,6 @@ async function handleAdminAddNominee(event) {
   const password = document.getElementById('adminNomineePassword').value.trim();
   const portfolio = document.getElementById('adminNomineePortfolio').value.trim();
   const bio = document.getElementById('adminNomineeBio').value.trim();
-  const manifesto = document.getElementById('adminNomineeManifesto').value.trim();
   const programme = document.getElementById('adminNomineeProgramme').value.trim();
   const level = document.getElementById('adminNomineeLevel').value.trim();
   const photoInput = document.getElementById('adminNomineePhoto');
@@ -887,7 +882,6 @@ async function handleAdminAddNominee(event) {
     password: password || 'nominee123',
     portfolio,
     bio,
-    manifesto,
     programme,
     level,
     photoUrl: null
