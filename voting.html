@@ -95,10 +95,25 @@
 
       <div class="dashboard-grid" style="margin-top: 20px;">
         <div class="card"><div class="muted">Name</div><div id="studentName" class="num">-</div></div>
-        <div class="card"><div class="muted">Level</div><div id="studentIndexDisplay" class="num">-</div></div>
-        <div class="card"><div class="muted">Programme</div><div id="studentProgramme" class="num">-</div></div>
+        <div class="card">
+          <label for="studentLevel">Level</label>
+          <select id="studentLevel">
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+          </select>
+        </div>
+        <div class="card">
+          <label for="studentProgramme">Programme</label>
+          <select id="studentProgramme">
+            <option value="BTECH">BTECH</option>
+            <option value="HND">HND</option>
+          </select>
+        </div>
         <div class="card"><div class="muted">Status</div><div id="studentStatus" class="num">Not Voted</div></div>
       </div>
+      <button id="saveStudentDetailsBtn" class="btn secondary" type="button" style="margin-top:16px;">Save Programme and Level</button>
       <div id="studentMessage" class="notice hidden"></div>
     </section>
 

@@ -523,20 +523,35 @@ async function showStudentDashboard() {
     const dashboard = document.getElementById('studentDashboard');
     const greeting = document.getElementById('studentGreeting');
     const name = document.getElementById('studentName');
-    const indexDisplay = document.getElementById('studentIndexDisplay');
+    const level = document.getElementById('studentLevel');
     const programme = document.getElementById('studentProgramme');
     const status = document.getElementById('studentStatus');
 
     if (dashboard) dashboard.classList.add('active');
     if (greeting) greeting.textContent = `Welcome, ${student.firstName || 'Student'}!`;
     if (name) name.textContent = `${student.firstName || ''} ${student.lastName || ''}`.trim();
-    if (indexDisplay) indexDisplay.textContent = student.level || student.indexNumber || '-';
-    if (programme) programme.textContent = student.programme || 'Not set';
+    if (level) level.value = student.level || '400';
+    if (programme) programme.value = student.programme === 'HND' ? 'HND' : 'BTECH';
     if (status) status.textContent = student.hasVoted ? 'Voted' : 'Not Voted';
     await loadNomineesList();
   } catch (error) {
     console.error(error);
     logoutStudent();
+  }
+}
+
+async function saveStudentDetails() {
+  const token = getStoredToken('studentToken');
+  if (!token) return;
+  try {
+    const result = await apiRequest('/student/profile', 'PUT', {
+      level: document.getElementById('studentLevel').value,
+      programme: document.getElementById('studentProgramme').value
+    }, token);
+    setStoredToken('studentInfo', result.student);
+    showMessage('studentMessage', result.message, 'success');
+  } catch (error) {
+    showMessage('studentMessage', error.message, 'error');
   }
 }
 
@@ -1055,6 +1070,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const closeVotingBtn = document.getElementById('closeVotingBtn');
   if (closeVotingBtn) closeVotingBtn.addEventListener('click', () => toggleVoting(false));
+
+  const saveStudentDetailsBtn = document.getElementById('saveStudentDetailsBtn');
+  if (saveStudentDetailsBtn) saveStudentDetailsBtn.addEventListener('click', saveStudentDetails);
 
   const studentToken = getStoredToken('studentToken');
   if (studentToken) {

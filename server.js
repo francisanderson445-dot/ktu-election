@@ -861,6 +861,18 @@ app.get('/api/student/me', verifyToken, async (req, res) => {
   });
 });
 
+app.put('/api/student/profile', verifyToken, async (req, res) => {
+  const programme = normalizeText(req.body.programme || '').toUpperCase();
+  const level = normalizeText(req.body.level || '');
+  if (!['HND', 'BTECH'].includes(programme) || !['100', '200', '300', '400'].includes(level)) {
+    return res.status(400).json({ success: false, message: 'Choose a valid programme and level.' });
+  }
+
+  await run('UPDATE students SET programme = ?, level = ? WHERE id = ?', [programme, level, req.user.id]);
+  const student = await get('SELECT * FROM students WHERE id = ?', [req.user.id]);
+  res.json({ success: true, student, message: 'Programme and level saved successfully.' });
+});
+
 app.get('/api/nominees', async (req, res) => {
   const nominees = await all("SELECT id, fullName, email, portfolio, bio, manifesto, programme, level, photoUrl FROM nominees WHERE portfolio <> 'Vice President' ORDER BY portfolio ASC, fullName ASC");
   const publicNominees = nominees.map(limitPublicPhotoSize);
